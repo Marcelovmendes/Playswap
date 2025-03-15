@@ -1,0 +1,5 @@
+spring.application.name=spotify-service
+# Spotify API Configuration
+spotify.client-id=YOUR_CLIENT_ID_HERE
+spotify.client-secret=YOUR_CLIENT_SECRET_HERE
+spotify.redirect-uri=http://localhost:8080/auth/callback
