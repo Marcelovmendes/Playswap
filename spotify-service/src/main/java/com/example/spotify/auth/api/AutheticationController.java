@@ -1,6 +1,4 @@
 package com.example.spotify.auth.api;
-
-import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.application.impl.SpotifyAuthenticationService;
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import jakarta.servlet.http.HttpSession;

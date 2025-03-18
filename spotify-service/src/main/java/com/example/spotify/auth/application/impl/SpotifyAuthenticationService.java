@@ -1,5 +1,4 @@
 package com.example.spotify.auth.application.impl;
-
 import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.PkceService;
