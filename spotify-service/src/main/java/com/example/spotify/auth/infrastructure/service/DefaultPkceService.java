@@ -14,7 +14,7 @@ public class DefaultPkceService implements PkceService {
     @Override
     public String generateCodeVerifier() {
         SecureRandom secureRandom = new SecureRandom();
-        byte[] bytes = new byte[64]; //64 bytes = 512 bits]
+        byte[] bytes = new byte[64]; //64 bytes = 512 bits
         secureRandom.nextBytes(bytes);
 
         String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);

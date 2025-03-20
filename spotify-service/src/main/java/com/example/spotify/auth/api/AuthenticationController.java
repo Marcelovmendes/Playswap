@@ -1,8 +1,7 @@
 package com.example.spotify.auth.api;
-
-import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.application.impl.SpotifyAuthenticationService;
 import com.example.spotify.auth.domain.entity.OAuth2Token;
+import com.example.spotify.auth.domain.service.TokenStorageService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +14,15 @@ import java.net.URI;
 
 @Controller
 @RequestMapping("auth")
-public class AutheticationController {
+public class AuthenticationController {
 
-    private final Logger log = LoggerFactory.getLogger(AutheticationController.class);
-    private final SpotifyAuthenticationService authService;
+    private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
+    private final AuthenticationService authService;
+    private final TokenStorageService tokenStorageService;
 
-
-
-    public AutheticationController(SpotifyAuthenticationService authService) {
+    public AuthenticationController(SpotifyAuthenticationService authService, TokenStorageService tokenStorageService) {
         this.authService = authService;
+        this.tokenStorageService = tokenStorageService;
     }
 
     @GetMapping("/spotify")
@@ -44,6 +43,8 @@ public class AutheticationController {
             @RequestParam(required = false) String error,
             HttpSession session) {
 
+
+        log.info("Callback session ID: {}", session.getId());
         log.info("Callback recebido. Code presente: {}, State: {}, Error: {}",
                 code != null, state, error != null ? error : "nenhum");
 
@@ -54,9 +55,8 @@ public class AutheticationController {
 
         try {
             OAuth2Token token = authService.handleAuthenticationCallback(code, state);
-            session.setAttribute("spotifyAccessToken", token.getAccessToken());
-            session.setAttribute("spotifyRefreshToken", token.getRefreshToken());
-            session.setAttribute("spotifyTokenExpiry", token.getExpiresAt().toEpochMilli());
+            tokenStorageService.storeUserToken(session, token);
+
 
             log.info("Autenticação concluída com sucesso");
             return "redirect:/spotify/dashboard";

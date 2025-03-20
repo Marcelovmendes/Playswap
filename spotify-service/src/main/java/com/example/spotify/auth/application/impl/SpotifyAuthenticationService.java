@@ -5,6 +5,7 @@ import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.PkceService;
 import com.example.spotify.auth.domain.service.StateManagementService;
 import com.example.spotify.auth.infrastructure.adapter.SpotifyApiAdapter;
+import com.example.spotify.auth.infrastructure.service.SpotifyApiContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,27 +22,26 @@ public class SpotifyAuthenticationService implements AuthenticationService {
     private static final Logger log = LoggerFactory.getLogger(SpotifyAuthenticationService.class);
     private static final Duration STATE_TIMEOUT = Duration.ofMinutes(10);
     private final StateManagementService stateService;
-    private final SpotifyApiAdapter spotifyApiAdapter;
+    private final SpotifyApiContract spotifyApiAdapter;
     private final PkceService pkceService;
 
     private static final String SCOPES = "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read";
 
 
-    public SpotifyAuthenticationService(PkceService pkceService, StateManagementService stateService, SpotifyApiAdapter spotifyApiAdapter, PkceService pkceService1) {
+    public SpotifyAuthenticationService(PkceService pkceService, StateManagementService stateService, SpotifyApiContract spotifyApiAdapter, PkceService pkceService1) {
         this.stateService = stateService;
         this.spotifyApiAdapter = spotifyApiAdapter;
         this.pkceService = pkceService1;
     }
 
     @Override
-    public URI initiateAuthentication() throws AuthenticationException {
+    public URI initiateAuthentication() {
         String codeVerifier = pkceService.generateCodeVerifier();
         String codeChallenge = pkceService.generateCodeChallenge(codeVerifier);
         String state = UUID.randomUUID().toString().replace("-", "");
 
         log.info("Iniciando autenticação Spotify: {}", state);
         stateService.saveState(state, codeVerifier, STATE_TIMEOUT);
-
         return spotifyApiAdapter.createAuthorizationUri(codeChallenge, state, SCOPES);
     }
 
