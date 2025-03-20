@@ -1,8 +1,10 @@
 package com.example.spotify.auth.domain.entity;
 
+import com.example.spotify.auth.domain.service.UserTokenService;
+
 import java.time.Instant;
 
-public class OAuth2Token {
+public class OAuth2Token implements UserTokenService {
 
     private final String accessToken;
     private final String refreshToken;
@@ -35,7 +37,4 @@ public class OAuth2Token {
         return Instant.now().isAfter(expiresAt);
     }
 
-    public long getExpiresInSeconds() {
-        return Instant.now().until(expiresAt, java.time.temporal.ChronoUnit.SECONDS);
-    }
 }

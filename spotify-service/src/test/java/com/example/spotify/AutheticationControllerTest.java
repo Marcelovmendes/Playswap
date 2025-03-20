@@ -2,7 +2,7 @@ package com.example.spotify;
 
 
 
-import com.example.spotify.auth.api.AutheticationController;
+import com.example.spotify.auth.api.AuthenticationController;
 import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,6 @@ import java.net.URI;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +26,7 @@ class AuthenticationControllerTest {
     private AuthenticationService authService;
 
     @InjectMocks
-    private AutheticationController controller;
+    private AuthenticationController controller;
 
     private MockHttpSession session;
 
