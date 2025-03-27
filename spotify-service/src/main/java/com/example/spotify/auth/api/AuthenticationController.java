@@ -1,20 +1,27 @@
 package com.example.spotify.auth.api;
 import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.application.impl.SpotifyAuthenticationService;
-import com.example.spotify.auth.domain.entity.OAuth2Token;
+import com.example.spotify.auth.domain.exception.AuthenticationException;
 import com.example.spotify.auth.domain.service.TokenStorageService;
+import com.example.spotify.auth.domain.service.UserTokenService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
-@Controller
-@RequestMapping("auth")
+@RestController
+@RequestMapping("/api/auth")
 public class AuthenticationController {
 
     private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
@@ -27,13 +34,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/spotify")
-    public String initiateAuthentication() {
+    public ResponseEntity<String> initiateAuthentication() {
         try {
-            URI authorizationUri = authService.initiateAuthentication();
-            return "redirect:" + authorizationUri.toString();
+            URI response = authService.initiateAuthentication();
+
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Falha ao iniciar autenticação", e);
-            return "redirect:/error?reason=auth_initialization_failed";
+            return new ResponseEntity<>( "Falha ao iniciar autenticação do usuário",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -51,21 +59,24 @@ public class AuthenticationController {
 
         if (error != null) {
             log.error("Erro retornado pelo provedor: {}", error);
-            return "redirect:/error?reason=" + error;
-        }
 
+        }
         try {
-            OAuth2Token token = authService.handleAuthenticationCallback(code, state);
+            UserTokenService token = authService.handleAuthenticationCallback(code, state);
             tokenStorageService.storeUserToken(session, token);
 
+            log.info("Autenticação concluída e enviada pra sessão com sucesso!");
 
-            log.info("Autenticação concluída com sucesso");
             return "redirect:/spotify/dashboard";
-            
-        } catch (Exception e) {
-            log.error("Erro inesperado", e);
-            return "redirect:/error?reason=unexpected_error";
-        }
-    }
 
+
+        } catch (AuthenticationException e) {
+            log.error("Erro de autenticação: {}", e.getMessage());
+
+        } catch (Exception e) {
+            log.error("Erro inesperado no callback", e);
+
+        }
+        return "redirect:/spotify/dashboard";
+    }
 }

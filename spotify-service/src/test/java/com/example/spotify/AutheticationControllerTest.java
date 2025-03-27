@@ -1,151 +1,134 @@
 package com.example.spotify;
 
 
-
-import com.example.spotify.auth.api.AuthenticationController;
-import com.example.spotify.auth.application.AuthenticationService;
-import com.example.spotify.auth.domain.entity.OAuth2Token;
+import com.example.spotify.auth.domain.service.TokenStorageService;
+import com.example.spotify.auth.domain.service.UserTokenService;
+import com.example.spotify.user.api.DashboardUserController;
+import com.example.spotify.user.api.dto.UserProfileDTO;
+import com.example.spotify.user.application.UserServiceContract;
+import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpSession;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
-import java.net.URI;
-import java.time.Instant;
+import java.io.IOException;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthenticationControllerTest {
+class DashboardUserControllerTest {
 
     @Mock
-    private AuthenticationService authService;
+    private TokenStorageService tokenStorage;
+
+    @Mock
+    private UserServiceContract userService;
 
     @InjectMocks
-    private AuthenticationController controller;
+    private DashboardUserController controller;
 
     private MockHttpSession session;
+    private UserTokenService mockToken;
+    private UserProfileDTO mockUserProfile;
 
     @BeforeEach
     void setUp() {
         session = new MockHttpSession();
+        mockToken = mock(UserTokenService.class);
+
+        mockUserProfile = new UserProfileDTO(
+                LocalDate.of(1998,6,9),
+                "US",
+                "Test User",
+                "test@example.com",
+                "https://open.spotify.com/user/test",
+                100,
+                "https://api.spotify.com/v1/users/test",
+                "https://i.scdn.co/image/profile.jpg",
+                "spotify:user:test",
+                "user"
+        );
     }
 
     @Test
-    void initiateAuthentication_ShouldRedirectToAuthUri() throws Exception {
+    void showDashboard_WithValidToken_ShouldReturnUserProfile() throws IOException, ParseException, SpotifyWebApiException {
         // Arrange
-        URI authUri = new URI("https://accounts.spotify.com/authorize?params=test");
-        when(authService.initiateAuthentication()).thenReturn(authUri);
+        session.setAttribute("spotifyAccessToken", "test_token");
+        when(tokenStorage.retrieveUserToken()).thenReturn(mockToken);
+        when(userService.getCurrentUserProfileAsync(mockToken)).thenReturn(mockUserProfile);
 
         // Act
-        String result = controller.initiateAuthentication();
+        ResponseEntity<?> response = controller.showDashboard(session);
 
         // Assert
-        assertEquals("redirect:" + authUri.toString(), result);
-        verify(authService).initiateAuthentication();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(mockUserProfile, response.getBody());
+        verify(tokenStorage).retrieveUserToken();
+        verify(userService).getCurrentUserProfileAsync(mockToken);
     }
 
     @Test
-    void initiateAuthentication_WithException_ShouldRedirectToError() throws Exception {
+    void showDashboard_WithMissingToken_ShouldWarnAndProceed() throws IOException, ParseException, SpotifyWebApiException {
         // Arrange
-        when(authService.initiateAuthentication()).thenThrow(new RuntimeException("Test error"));
+        when(tokenStorage.retrieveUserToken()).thenReturn(mockToken);
+        when(userService.getCurrentUserProfileAsync(mockToken)).thenReturn(mockUserProfile);
 
         // Act
-        String result = controller.initiateAuthentication();
+        ResponseEntity<?> response = controller.showDashboard(session);
 
         // Assert
-        assertEquals("redirect:/error?reason=auth_initialization_failed", result);
-        verify(authService).initiateAuthentication();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(mockUserProfile, response.getBody());
+        verify(tokenStorage).retrieveUserToken();
+        verify(userService).getCurrentUserProfileAsync(mockToken);
     }
 
     @Test
-    void handleCallback_WithError_ShouldRedirectToErrorPage() {
+    void showDashboard_WithServiceException_ShouldReturnError() throws IOException, ParseException, SpotifyWebApiException {
         // Arrange
-        String error = "access_denied";
+        session.setAttribute("spotifyAccessToken", "test_token");
+        when(tokenStorage.retrieveUserToken()).thenReturn(mockToken);
+
+        String errorMessage = "Service error";
+        when(userService.getCurrentUserProfileAsync(mockToken))
+                .thenThrow(new RuntimeException(errorMessage));
 
         // Act
-        String result = controller.handleCallback(null, null, error, session);
+        ResponseEntity<?> response = controller.showDashboard(session);
 
         // Assert
-        assertEquals("redirect:/error?reason=access_denied", result);
-        verifyNoInteractions(authService);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+        verify(tokenStorage).retrieveUserToken();
+        verify(userService).getCurrentUserProfileAsync(mockToken);
     }
 
     @Test
-    void handleCallback_WithValidParams_ShouldExchangeCodeAndRedirect() {
+    void showDashboard_WithTokenExceptionl_ShouldReturnError() {
         // Arrange
-        String code = "valid_auth_code";
-        String state = "valid_state";
+        session.setAttribute("spotifyAccessToken", "test_token");
 
-        OAuth2Token token = mock(OAuth2Token.class);
-        when(token.getAccessToken()).thenReturn("access_token_123");
-        when(token.getRefreshToken()).thenReturn("refresh_token_456");
-        when(token.getExpiresAt()).thenReturn(Instant.now().plusSeconds(3600));
-
-        when(authService.handleAuthenticationCallback(code, state)).thenReturn(token);
+        String errorMessage = "Token retrieval error";
+        when(tokenStorage.retrieveUserToken())
+                .thenThrow(new RuntimeException(errorMessage));
 
         // Act
-        String result = controller.handleCallback(code, state, null, session);
+        ResponseEntity<?> response = controller.showDashboard(session);
 
         // Assert
-        assertEquals("redirect:/spotify/dashboard", result);
-        assertEquals("access_token_123", session.getAttribute("spotifyAccessToken"));
-        assertEquals("refresh_token_456", session.getAttribute("spotifyRefreshToken"));
-        verify(authService).handleAuthenticationCallback(code, state);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+        verify(tokenStorage).retrieveUserToken();
+        verifyNoInteractions(userService);
     }
-
-    @Test
-    void handleCallback_WithInvalidState_ShouldRedirectWithError() {
-        // Arrange
-        String code = "valid_code";
-        String state = "invalid_state";
-
-        when(authService.handleAuthenticationCallback(code, state))
-                .thenThrow(new Exception("Test error"));
-
-        // Act
-        String result = controller.handleCallback(code, state, null, session);
-
-        // Assert
-        assertEquals("redirect:/error?reason=invalid_state", result);
-        verify(authService).handleAuthenticationCallback(code, state);
-    }
-
-    @Test
-    void handleCallback_WithAuthenticationError_ShouldRedirectWithError() {
-        // Arrange
-        String code = "valid_code";
-        String state = "valid_state";
-
-        when(authService.handleAuthenticationCallback(code, state))
-                .thenThrow(new Exception("Authentication failed"));
-
-        // Act
-        String result = controller.handleCallback(code, state, null, session);
-
-        // Assert
-        assertEquals("redirect:/error?reason=authentication_failed", result);
-        verify(authService).handleAuthenticationCallback(code, state);
-    }
-
-    @Test
-    void handleCallback_WithUnexpectedError_ShouldRedirectWithGenericError() {
-        // Arrange
-        String code = "valid_code";
-        String state = "valid_state";
-
-        when(authService.handleAuthenticationCallback(code, state))
-                .thenThrow(new RuntimeException("Unexpected error"));
-
-        // Act
-        String result = controller.handleCallback(code, state, null, session);
-
-        // Assert
-        assertEquals("redirect:/error?reason=unexpected_error", result);
-        verify(authService).handleAuthenticationCallback(code, state);
-    }
-}
+};
