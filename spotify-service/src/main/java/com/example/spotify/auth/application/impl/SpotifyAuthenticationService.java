@@ -4,7 +4,6 @@ import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.PkceService;
 import com.example.spotify.auth.domain.service.StateManagementService;
-import com.example.spotify.auth.infrastructure.adapter.SpotifyApiAdapter;
 import com.example.spotify.auth.infrastructure.service.SpotifyApiContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +52,7 @@ public class SpotifyAuthenticationService implements AuthenticationService {
         }
         String codeVerifier = stateService.getCodeVerifier(state);
         if(codeVerifier == null){
+            log.error("Código de Verificação nulo");
             return null;
         }
         try {

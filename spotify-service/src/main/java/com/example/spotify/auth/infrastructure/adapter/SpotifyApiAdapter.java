@@ -50,7 +50,6 @@ public class SpotifyApiAdapter implements SpotifyApiContract {
                AuthorizationCodePKCERequest request = spotifyApi.
                        authorizationCodePKCE(code, codeVerifier)
                        .build();
-
                AuthorizationCodeCredentials credentials = request.execute();
                return OAuth2Token.create(
                        credentials.getAccessToken(),

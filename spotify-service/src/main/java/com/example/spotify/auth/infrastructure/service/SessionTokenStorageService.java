@@ -2,12 +2,14 @@ package com.example.spotify.auth.infrastructure.service;
 
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.TokenStorageService;
+import com.example.spotify.auth.domain.service.UserTokenService;
 import com.example.spotify.auth.infrastructure.adapter.OAuth2TokenAdapter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.michaelthelin.spotify.model_objects.specification.User;
 
 @Service
 public class SessionTokenStorageService implements TokenStorageService {
@@ -25,14 +27,14 @@ public class SessionTokenStorageService implements TokenStorageService {
     }
 
     @Override
-    public void storeUserToken(HttpSession session, OAuth2Token token) {
+    public void storeUserToken(HttpSession session, UserTokenService token) {
         session.setAttribute(TOKEN_KEY, token.getAccessToken());
         session.setAttribute(REFRESH_TOKEN_KEY, token.getRefreshToken());
         session.setAttribute(TOKEN_EXPIRY_KEY, token.getExpiresAt().toEpochMilli());
     }
 
     @Override
-    public OAuth2Token retrieveUserToken(String sessionId) {
+    public UserTokenService retrieveUserToken() {
         HttpSession session = request.getSession(false);
         if (session == null) return null;
 
@@ -45,11 +47,6 @@ public class SessionTokenStorageService implements TokenStorageService {
         return tokenAdapter.createFromSession(accessToken, refreshToken, expiryMillis);
     }
 
-    @Override
-    public boolean hasValidToken(String sessionId) {
-        OAuth2Token token = retrieveUserToken(sessionId);
-        return token != null && !token.isExpired();
-    }
 
     @Override
     public void removeUserToken(String sessionId) {

@@ -1,38 +1,50 @@
 package com.example.spotify.user.application.impl;
 
 import com.example.spotify.auth.domain.service.UserTokenService;
+import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.application.CurrentUserService;
 import com.example.spotify.user.application.UserServiceContract;
-import org.apache.hc.core5.http.ParseException;
+import com.example.spotify.user.domain.entity.SpotifyUser;
+import com.example.spotify.user.domain.repository.SpotifyUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.model_objects.specification.User;
-
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @Service
 public class UserServiceImpl implements UserServiceContract {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final CurrentUserService spotifyUserAdapter;
+    private final SpotifyUserRepository repository;
 
-    public UserServiceImpl(CurrentUserService spotifyUserAdapter) {
+    public UserServiceImpl(CurrentUserService spotifyUserAdapter, SpotifyUserRepository repository) {
         this.spotifyUserAdapter = spotifyUserAdapter;
+        this.repository = repository;
     }
 
     @Override
-    public CompletableFuture<User> getCurrentUserProfileAsync(UserTokenService accessToken) throws IOException, ParseException, SpotifyWebApiException {
+    public UserProfileDTO getCurrentUserProfileAsync(UserTokenService token)  {
+         SpotifyUser spotifyUserData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
+         SpotifyUser spotifyUser = repository.findByEmail(spotifyUserData.getEmail()).orElse(spotifyUserData);
 
-        return spotifyUserAdapter.getCurrentUsersProfileAsync(accessToken)
-                .exceptionally(ex -> {
-                    logger.error("Erro ao obter perfil do usuário: {}", ex.getMessage(), ex);
-                    throw new CompletionException("Falha ao obter perfil do usuário do Spotify", ex);
-                });
+         return convertToProfileDTO(spotifyUser);
 
+    }
+    private UserProfileDTO convertToProfileDTO(SpotifyUser user) {
+
+       return new UserProfileDTO(
+                user.getBirthdate(),
+                user.getCountry(),
+                user.getDisplayName(),
+                user.getEmail(),
+                user.getExternalUrls(),
+                user.getFollowersCount(),
+                user.getHref(),
+                user.getPhotoCover(),
+                user.getSpotifyUri(),
+                user.getType()
+
+        );
 
     }
 }
