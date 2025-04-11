@@ -7,5 +7,5 @@ import java.net.URI;
 
 public interface SpotifyApiContract {
     URI createAuthorizationUri(String codeChallenge, String state, String scopes);
-    OAuth2Token exchangeCodeForToken(String code, String codeVerifier) throws AuthenticationException;
+    OAuth2Token exchangeCodeForToken(String code, String codeVerifier);
 }

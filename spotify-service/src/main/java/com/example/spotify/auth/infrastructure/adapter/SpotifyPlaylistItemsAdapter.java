@@ -1,5 +1,8 @@
 package com.example.spotify.auth.infrastructure.adapter;
 
+import com.example.spotify.common.exception.AuthenticationException;
+import com.example.spotify.common.exception.ExceptionType;
+import com.example.spotify.common.exception.SpotifyApiException;
 import org.apache.hc.core5.http.ParseException;
 import com.example.spotify.auth.domain.service.UserTokenService;
 import com.example.spotify.playlist.application.PlaylistItemsContract;
@@ -24,17 +27,27 @@ public class SpotifyPlaylistItemsAdapter implements PlaylistItemsContract {
 
     @Override
     public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(UserTokenService accessToken) throws IOException, ParseException, SpotifyWebApiException {
-
+        try {
         spotifyApi.setAccessToken(accessToken.getAccessToken());
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
                 .limit(10)
                 .build();
-        try {
+
             return request.execute();
 
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
-            System.out.println("Error: " + e.getMessage());
-            throw e;
+        } catch (IOException e) {
+            throw new SpotifyApiException("Failed to connect to Spotify API",
+                    ExceptionType.SPOTIFY_API_EXCEPTION);
+        } catch (SpotifyWebApiException e) {
+            if (e.getMessage().contains("401")) {
+                throw new AuthenticationException("Invalid token",
+                        ExceptionType.TOKEN_EXPIRED);
+            }
+            throw new SpotifyApiException("Spotify API error",
+                    ExceptionType.SPOTIFY_API_EXCEPTION);
+        } catch (ParseException e) {
+            throw new SpotifyApiException("Error parsing response from Spotify API",
+                    ExceptionType.SPOTIFY_API_EXCEPTION);
         }
 
     }

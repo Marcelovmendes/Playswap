@@ -1,8 +1,7 @@
 package com.example.spotify.user.domain.entity;
 
-import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.UserTokenService;
-import com.example.spotify.user.api.dto.UserProfileDTO;
+import jakarta.annotation.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -10,16 +9,16 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-
 
 //TODO Ver quais campos vao ser necessários
 
-@Table("users")
+
+@Table(name = "users", schema = "spotify")
 public class SpotifyUser {
     @Id
     private String id;
 
+    @Nullable
     private LocalDate birthdate;
     private String country;
     private String displayName;
@@ -27,6 +26,7 @@ public class SpotifyUser {
     private String externalUrls;
     private int followersCount;
     private String href;
+    @Nullable
     private String photoCover;
     private String spotifyUri;
     private String type;

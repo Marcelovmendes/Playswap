@@ -10,6 +10,6 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public interface CurrentUserService {
-    User getCurrentUsersProfileSync(UserTokenService userToken) throws IOException, ParseException, SpotifyWebApiException;
+    User getCurrentUsersProfileSync(UserTokenService userToken);
     SpotifyUser getCurrentUsersProfileAsync(UserTokenService token);
 }

@@ -5,11 +5,13 @@ import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.PkceService;
 import com.example.spotify.auth.domain.service.StateManagementService;
 import com.example.spotify.auth.infrastructure.service.SpotifyApiContract;
+import com.example.spotify.common.exception.ApplicationException;
+import com.example.spotify.common.exception.AuthenticationException;
+import com.example.spotify.common.exception.ExceptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.UUID;
@@ -35,32 +37,42 @@ public class SpotifyAuthenticationService implements AuthenticationService {
 
     @Override
     public URI initiateAuthentication() {
-        String codeVerifier = pkceService.generateCodeVerifier();
-        String codeChallenge = pkceService.generateCodeChallenge(codeVerifier);
-        String state = UUID.randomUUID().toString().replace("-", "");
+        try {
+            String codeVerifier = pkceService.generateCodeVerifier();
+            String codeChallenge = pkceService.generateCodeChallenge(codeVerifier);
+            String state = UUID.randomUUID().toString().replace("-", "");
 
-        log.info("Iniciando autenticação Spotify: {}", state);
-        stateService.saveState(state, codeVerifier, STATE_TIMEOUT);
-        return spotifyApiAdapter.createAuthorizationUri(codeChallenge, state, SCOPES);
-    }
+            log.info("Iniciando autenticação Spotify: {}", state);
+            stateService.saveState(state, codeVerifier, STATE_TIMEOUT);
+            return spotifyApiAdapter.createAuthorizationUri(codeChallenge, state, SCOPES);
+        } catch (Exception e) {
+            if (e instanceof ApplicationException) {
+                throw e;
+            }
+            throw new AuthenticationException("Failed to initiate authentication", ExceptionType.AUTHENTICATION_EXCEPTION);
+         }
+        }
 
     @Override
     public OAuth2Token handleAuthenticationCallback(String code, String state) {
-        if(!stateService.validateState(state)) {
-            log.error("Estado inválido ou expirado: {}", state);
-            return null;
-        }
+        if (code == null || state == null) throw new AuthenticationException("Invalid code or state provided",
+                ExceptionType.AUTHENTICATION_EXCEPTION);
+
+        if(!stateService.validateState(state)) throw new AuthenticationException("Invalid state provided",
+                ExceptionType.AUTHENTICATION_EXCEPTION);
+
         String codeVerifier = stateService.getCodeVerifier(state);
-        if(codeVerifier == null){
-            log.error("Código de Verificação nulo");
-            return null;
-        }
+        if(codeVerifier == null) throw new AuthenticationException("Invalid or Null code verifier provided",
+                ExceptionType.AUTHENTICATION_EXCEPTION);
         try {
             OAuth2Token token = spotifyApiAdapter.exchangeCodeForToken(code, codeVerifier);
             stateService.removeState(state);
             return token;
-        } catch (AuthenticationException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            if (e instanceof ApplicationException) {
+                throw e;
+            }
+            throw new AuthenticationException("Failed to exchange code for token", ExceptionType.AUTHENTICATION_EXCEPTION);
         }
     }
 }
