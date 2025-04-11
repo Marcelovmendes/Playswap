@@ -2,14 +2,13 @@ package com.example.spotify.auth.infrastructure.adapter;
 
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.domain.service.OAuth2TokenService;
-import com.example.spotify.auth.domain.service.UserTokenService;
+
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
 @Component
 public class OAuth2TokenAdapter implements OAuth2TokenService {
-
 
 
     @Override

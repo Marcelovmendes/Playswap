@@ -46,7 +46,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/callback")
-    public String handleCallback(
+    public ResponseEntity<String> handleCallback(
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) String error,
@@ -66,17 +66,27 @@ public class AuthenticationController {
             tokenStorageService.storeUserToken(session, token);
 
             log.info("Autenticação concluída e enviada pra sessão com sucesso!");
-
-            return "redirect:/spotify/dashboard";
-
-
-        } catch (AuthenticationException e) {
-            log.error("Erro de autenticação: {}", e.getMessage());
-
+            return ResponseEntity.ok("""
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <script>
+                // Envia mensagem para a janela principal
+                window.opener.postMessage({
+                    type: 'SPOTIFY_AUTH_CALLBACK',
+                    success: true
+                }, '*');
+                
+                // Fecha esta janela automaticamente
+                setTimeout(() => window.close(), 500);
+            </script>
+            <p>Autenticação concluída!</p>
+        </body>
+        </html>
+        """);
         } catch (Exception e) {
-            log.error("Erro inesperado no callback", e);
-
+            new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/spotify/dashboard";
+        return null;
     }
 }

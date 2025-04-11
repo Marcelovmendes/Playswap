@@ -3,6 +3,9 @@ package com.example.spotify.auth.infrastructure.adapter;
 
 import com.example.spotify.auth.domain.entity.OAuth2Token;
 import com.example.spotify.auth.infrastructure.service.SpotifyApiContract;
+import com.example.spotify.common.exception.AuthenticationException;
+import com.example.spotify.common.exception.ExceptionType;
+import com.example.spotify.common.exception.SpotifyApiException;
 import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +18,6 @@ import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 
-import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URI;
 
@@ -37,15 +39,19 @@ public class SpotifyApiAdapter implements SpotifyApiContract {
 
     @Override
     public URI createAuthorizationUri(String codeChallenge, String state, String scopes) {
-            return spotifyApi.authorizationCodePKCEUri(codeChallenge)
-                    .state(state)
-                    .scope(scopes)
-                    .build()
-                    .execute();
+     try {
+         return spotifyApi.authorizationCodePKCEUri(codeChallenge)
+                 .state(state)
+                 .scope(scopes)
+                 .build()
+                 .execute();
+     } catch (Exception e) {
+         throw new SpotifyApiException("Error creating authorization URI", ExceptionType.SPOTIFY_API_EXCEPTION);
+     }
 
     }
     @Override
-    public OAuth2Token exchangeCodeForToken(String code, String codeVerifier) throws AuthenticationException {
+    public OAuth2Token exchangeCodeForToken(String code, String codeVerifier) {
            try {
                AuthorizationCodePKCERequest request = spotifyApi.
                        authorizationCodePKCE(code, codeVerifier)
@@ -57,8 +63,15 @@ public class SpotifyApiAdapter implements SpotifyApiContract {
                        credentials.getExpiresIn()
                );
 
-           } catch (Exception e) {
-               throw new AuthenticationException();
+           } catch (IOException e) {
+               log.error(e.getMessage(), e);
+               throw new AuthenticationException("Error exchanging code for token",ExceptionType.AUTHENTICATION_EXCEPTION);
+           } catch (SpotifyWebApiException e) {
+               log.error(e.getMessage(),e);
+               throw new AuthenticationException("Error rejecting code for token",ExceptionType.AUTHENTICATION_EXCEPTION);
+              } catch (ParseException e) {
+               log.error(e.getMessage(), e);
+               throw new SpotifyApiException("Error parsing code for token",ExceptionType.SPOTIFY_API_EXCEPTION);
            }
 
     }
