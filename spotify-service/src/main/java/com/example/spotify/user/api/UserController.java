@@ -3,7 +3,7 @@ package com.example.spotify.user.api;
 import com.example.spotify.auth.domain.service.TokenStoragePort;
 import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.user.api.dto.UserProfileDTO;
-import com.example.spotify.user.application.UserServicePort;
+import com.example.spotify.user.application.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("api/v1/user/")
+@RequestMapping("api/spotfy/v1/users/")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final TokenStoragePort tokenStorage;
-    private final UserServicePort userService;
+    private final UserService userService;
 
-    public UserController(TokenStoragePort tokenStorage, UserServicePort userService) {
+    public UserController(TokenStoragePort tokenStorage, UserService userService) {
         this.tokenStorage = tokenStorage;
         this.userService = userService;
     }

@@ -8,7 +8,7 @@ public record UserProfileDTO (
         String displayName,
         String email,
         String externalUrls,
-        int followersCount,
+        Integer followersCount,
         String href,
         String photoCover,
         String spotifyUri,

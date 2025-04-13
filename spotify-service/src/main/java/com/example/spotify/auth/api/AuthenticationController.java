@@ -27,7 +27,7 @@ public class AuthenticationController {
         this.tokenStoragePort = tokenStoragePort;
     }
 
-    @GetMapping("/spotify")
+    @GetMapping("/")
     public ResponseEntity<String> initiateAuthentication() {
         try {
             URI response = authService.initiateAuthentication();

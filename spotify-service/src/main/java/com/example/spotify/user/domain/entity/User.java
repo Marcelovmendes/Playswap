@@ -1,14 +1,15 @@
 package com.example.spotify.user.domain.entity;
 
-import com.example.spotify.auth.domain.service.UserToken;
 import jakarta.annotation.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 //TODO Ver quais campos vao ser necessários
 
@@ -16,36 +17,56 @@ import java.time.LocalDateTime;
 @Table(name = "users", schema = "spotify")
 public class User {
     @Id
-    private String id;
+    private UUID id;
 
     @Nullable
+    @Column("birth_date")
     private LocalDate birthdate;
     private String country;
+    @Column("display_name")
     private String displayName;
     private String email;
     private String externalUrls;
+    @Column("followers_count")
     private int followersCount;
+    @Column("hrf")
     private String href;
     @Nullable
+    @Column("photo_cover")
     private String photoCover;
+    @Column("spotify_uri")
     private String spotifyUri;
     private String type;
-    private String accesstoken;
-    private String refreshtoken;
-    private LocalDateTime tokenExpiry;
     @CreatedDate
-    private LocalDateTime firstSeen;
+    @Column("created_at")
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime last_seen;
+    @Column("updated_at")
+    private LocalDateTime updatedAt;
 
-    private String userRegistredId;
+    @Column("registered_user_id")
+    private String userRegisteredId;
 
     @Deprecated
     public User() {}
 
-    public User(String id, LocalDate birthdate, String country, String displayName, String email, String externalUrls,
-                int followersCount, String href, String photoCover, String spotifyUri, String type) {
+    public User(LocalDate birthdate, String country, String displayName, String email, String externalUrls,
+                int followersCount, String href, String photoCover, String spotifyUri, String type,String userRegisteredId) {
+        this.birthdate = birthdate;
+        this.country = country;
+        this.displayName = displayName;
+        this.email = email;
+        this.externalUrls = externalUrls;
+        this.followersCount = followersCount;
+        this.href = href;
+        this.photoCover = photoCover;
+        this.spotifyUri = spotifyUri;
+        this.type = type;
+        this.userRegisteredId = userRegisteredId;
+    }
+    public User(UUID id,LocalDate birthdate, String country, String displayName, String email, String externalUrls,
+                int followersCount, String href, String photoCover, String spotifyUri, String type,String userRegisteredId) {
         this.id = id;
         this.birthdate = birthdate;
         this.country = country;
@@ -57,9 +78,10 @@ public class User {
         this.photoCover = photoCover;
         this.spotifyUri = spotifyUri;
         this.type = type;
+        this.userRegisteredId = userRegisteredId;
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public LocalDate getBirthdate() { return birthdate; }
     public String getCountry() { return country; }
     public String getDisplayName() { return displayName; }
@@ -70,18 +92,12 @@ public class User {
     public String getPhotoCover() { return photoCover; }
     public String getSpotifyUri() { return spotifyUri; }
     public String getType() { return type; }
-    public LocalDateTime getFirstSeen() { return firstSeen; }
-    public LocalDateTime getLastSeen() { return last_seen; }
-    public String getUserRegistredId() { return userRegistredId; }
+    public String getUserRegisteredId() { return userRegisteredId; }
 
-    public User updateToken(UserToken newToken) {
-        this.accesstoken = newToken.getAccessToken();
-        this.refreshtoken = newToken.getRefreshToken();
-        this.tokenExpiry = LocalDateTime.from(newToken.getExpiresAt());
-        this.last_seen = LocalDateTime.now();
-        return this;
+
+    public User copyWithId(UUID id) {
+        return new User(id, birthdate, country, displayName, email, externalUrls, followersCount, href, photoCover, spotifyUri, type, userRegisteredId);
     }
-
 
 
 }

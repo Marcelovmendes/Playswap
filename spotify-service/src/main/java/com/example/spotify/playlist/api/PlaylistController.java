@@ -1,30 +1,46 @@
 package com.example.spotify.playlist.api;
 
-
-import com.example.spotify.auth.domain.service.TokenStoragePort;
-import com.example.spotify.auth.domain.service.UserToken;
-import com.example.spotify.user.api.dto.UserProfileDTO;
+import com.example.spotify.common.infrastructure.adapter.SpotifyPlaylistAdapter;
+import com.example.spotify.playlist.application.PlaylistsService;
+import com.example.spotify.playlist.application.impl.AuthTokenProvider;
+import com.example.spotify.playlist.application.TokenProvider;
+import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+
+import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("api/v1/playlist/")
+@RequestMapping("api/spotify/v1/playlist/")
 public class PlaylistController {
 
-    private final TokenStoragePort tokenStorage;
+    private static final Logger log = LoggerFactory.getLogger(PlaylistController.class);
+    private final TokenProvider authToken;
+    private final PlaylistsService playlistsService;
 
-    public PlaylistController(TokenStoragePort tokenStorage) {
-        this.tokenStorage = tokenStorage;
+    public PlaylistController(AuthTokenProvider authToken, PlaylistsService playlistsService) {
+        this.authToken = authToken;
+        this.playlistsService = playlistsService;
     }
 
-    public ResponseEntity<?> getPlaylistsByUser() {
+     @GetMapping("/")
+    public ResponseEntity<Void> getPlaylists(HttpSession session) {
+             log.info("Session request ID: {}", session.getId());
+             String accessToken = (String) session.getAttribute("spotifyAccessToken");
 
-        UserToken token = tokenStorage.retrieveUserToken();
-
-
-        return ResponseEntity.ok("ok");
+        String token = authToken.getAccessToken();
+         if (accessToken == null) {
+             return ResponseEntity.status(401).build();
+         }
+         CompletableFuture<Paging<PlaylistSimplified>> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync(token);
+         log.info("Playlists data: {}", playLists);
+        return ResponseEntity.ok().build();
     }
-
 
 }

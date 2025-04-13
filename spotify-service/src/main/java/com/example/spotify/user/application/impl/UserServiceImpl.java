@@ -6,7 +6,7 @@ import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.UserProfileException;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
-import com.example.spotify.user.application.UserServicePort;
+import com.example.spotify.user.application.UserService;
 import com.example.spotify.user.domain.entity.User;
 import com.example.spotify.user.domain.repository.UserRepository;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserServiceImpl implements UserServicePort {
+public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserProfilePort spotifyUserAdapter;
@@ -38,14 +38,24 @@ public class UserServiceImpl implements UserServicePort {
          }
          User persistedUser = repository.findByEmail(userData.getEmail()).orElse(userData);
 
-         if(userData == persistedUser)
-             try {
-                    repository.save(persistedUser);
-                } catch (Exception e) {
-                    logger.error("Error saving user data: {}", e.toString());
-             }
+        boolean isNewUser = persistedUser == userData;
+        if (isNewUser) {
+            try {
+                logger.info("external_urls length: {}", userData.getExternalUrls().length());
+                logger.info("photo_cover length: {}", userData.getPhotoCover() != null ? userData.getPhotoCover().length() : 0);
+                logger.info("spotify_uri length: {}", userData.getSpotifyUri().length());
+                logger.info("registered_user_id length: {}", userData.getUserRegisteredId().length());
 
-         return convertToProfileDTO(persistedUser);
+                persistedUser = repository.save(userData);
+                logger.info("New user saved successfully: {}", userData.getEmail());
+            } catch (Exception e) {
+                logger.error("Error saving user data: {}", e.toString(), e);
+
+            }
+        }
+
+
+                return convertToProfileDTO(persistedUser);
 
     }
     private UserProfileDTO convertToProfileDTO(User user) {

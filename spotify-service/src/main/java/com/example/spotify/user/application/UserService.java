@@ -4,6 +4,6 @@ import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 
 
-public interface UserServicePort {
+public interface UserService {
    UserProfileDTO getCurrentUserProfileAsync(UserToken accessToken);
 }
