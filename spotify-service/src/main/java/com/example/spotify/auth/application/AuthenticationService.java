@@ -1,11 +1,11 @@
 package com.example.spotify.auth.application;
 
-import com.example.spotify.auth.domain.entity.OAuth2Token;
+import com.example.spotify.auth.domain.entity.AuthenticationToken;
 
 import javax.naming.AuthenticationException;
 import java.net.URI;
 
 public interface AuthenticationService {
     URI initiateAuthentication() throws AuthenticationException;
-    OAuth2Token handleAuthenticationCallback(String code, String state);
+    AuthenticationToken handleAuthenticationCallback(String code, String state);
 }

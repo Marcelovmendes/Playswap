@@ -1,11 +1,11 @@
-package com.example.spotify.auth.infrastructure.adapter;
+package com.example.spotify.common.infrastructure.adapter;
 
 import com.example.spotify.common.exception.AuthenticationException;
-import com.example.spotify.common.exception.ExceptionType;
+import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.SpotifyApiException;
 import org.apache.hc.core5.http.ParseException;
-import com.example.spotify.auth.domain.service.UserTokenService;
-import com.example.spotify.playlist.application.PlaylistItemsContract;
+import com.example.spotify.auth.domain.service.UserToken;
+import com.example.spotify.playlist.domain.PlaylistPort;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -17,16 +17,16 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-public class SpotifyPlaylistItemsAdapter implements PlaylistItemsContract {
+public class SpotifyPlaylistAdapter implements PlaylistPort {
 
     private final SpotifyApi spotifyApi;
 
-    public SpotifyPlaylistItemsAdapter(SpotifyApi spotifyApi) {
+    public SpotifyPlaylistAdapter(SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
     }
 
     @Override
-    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(UserTokenService accessToken) throws IOException, ParseException, SpotifyWebApiException {
+    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(UserToken accessToken){
         try {
         spotifyApi.setAccessToken(accessToken.getAccessToken());
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
@@ -37,23 +37,23 @@ public class SpotifyPlaylistItemsAdapter implements PlaylistItemsContract {
 
         } catch (IOException e) {
             throw new SpotifyApiException("Failed to connect to Spotify API",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         } catch (SpotifyWebApiException e) {
             if (e.getMessage().contains("401")) {
                 throw new AuthenticationException("Invalid token",
-                        ExceptionType.TOKEN_EXPIRED);
+                        ErrorType.TOKEN_EXPIRED);
             }
             throw new SpotifyApiException("Spotify API error",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         } catch (ParseException e) {
             throw new SpotifyApiException("Error parsing response from Spotify API",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         }
 
     }
 
     @Override
-    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylists_Async(UserTokenService accessToken) {
+    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(UserToken accessToken) {
         spotifyApi.setAccessToken(accessToken.getAccessToken());
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
                 .limit(10)

@@ -1,6 +1,5 @@
-package com.example.spotify.auth.infrastructure.service;
+package com.example.spotify.common.infrastructure.service;
 
-import com.example.spotify.auth.domain.service.PkceService;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -10,8 +9,8 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
-public class DefaultPkceService implements PkceService {
-    @Override
+public class DefaultPkce {
+
     public String generateCodeVerifier() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] bytes = new byte[64]; //64 bytes = 512 bits
@@ -20,7 +19,7 @@ public class DefaultPkceService implements PkceService {
         String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         return encoded.replaceAll("[^a-zA-Z0-9\\-._~]", "");
     }
-    @Override
+
     public String generateCodeChallenge(String codeVerifier) {
         try {
             byte[] verifierByte = codeVerifier.getBytes(StandardCharsets.UTF_8);
