@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS spotify.users (
      photo_cover VARCHAR(255) NULL,
      spotify_uri VARCHAR(255),
      "type" VARCHAR(50),
-     first_seen TIMESTAMP,
-     last_seen TIMESTAMP,
+     created_at TIMESTAMP,
+     updated_at TIMESTAMP,
      registered_user_id VARCHAR(255) NULL
 )

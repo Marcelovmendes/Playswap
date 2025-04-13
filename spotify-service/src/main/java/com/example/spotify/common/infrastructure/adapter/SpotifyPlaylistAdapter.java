@@ -4,7 +4,6 @@ import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.SpotifyApiException;
 import org.apache.hc.core5.http.ParseException;
-import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -26,9 +25,9 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
     }
 
     @Override
-    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(UserToken accessToken){
+    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(String accessToken){
         try {
-        spotifyApi.setAccessToken(accessToken.getAccessToken());
+        spotifyApi.setAccessToken(accessToken);
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
                 .limit(10)
                 .build();
@@ -53,11 +52,12 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
     }
 
     @Override
-    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(UserToken accessToken) {
-        spotifyApi.setAccessToken(accessToken.getAccessToken());
+    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
+        spotifyApi.setAccessToken(accessToken);
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
                 .limit(10)
                 .build();
+
         return request.executeAsync();
 
 

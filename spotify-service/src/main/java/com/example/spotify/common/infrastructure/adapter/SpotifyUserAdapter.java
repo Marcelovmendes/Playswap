@@ -79,7 +79,6 @@ public class SpotifyUserAdapter implements UserProfilePort {
             photoUrl = user.getImages()[0].getUrl();
         }
         return new User(
-                user.getId(),
                 birthdate,
                 user.getCountry().getAlpha3(),
                 user.getDisplayName(),
@@ -89,7 +88,8 @@ public class SpotifyUserAdapter implements UserProfilePort {
                 user.getHref(),
                 photoUrl,
                 user.getUri(),
-                user.getType().getType()
+                user.getType().getType(),
+                user.getId()
         );
     }
 
