@@ -1,11 +1,11 @@
 package com.example.spotify;
 
 
-import com.example.spotify.auth.domain.service.TokenStorageService;
-import com.example.spotify.auth.domain.service.UserTokenService;
-import com.example.spotify.user.api.DashboardUserController;
+import com.example.spotify.auth.domain.service.TokenStoragePort;
+import com.example.spotify.auth.domain.service.UserToken;
+import com.example.spotify.user.api.UserController;
 import com.example.spotify.user.api.dto.UserProfileDTO;
-import com.example.spotify.user.application.UserServiceContract;
+import com.example.spotify.user.application.UserServicePort;
 import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,22 +29,22 @@ import static org.mockito.Mockito.*;
 class DashboardUserControllerTest {
 
     @Mock
-    private TokenStorageService tokenStorage;
+    private TokenStoragePort tokenStorage;
 
     @Mock
-    private UserServiceContract userService;
+    private UserServicePort userService;
 
     @InjectMocks
-    private DashboardUserController controller;
+    private UserController controller;
 
     private MockHttpSession session;
-    private UserTokenService mockToken;
+    private UserToken mockToken;
     private UserProfileDTO mockUserProfile;
 
     @BeforeEach
     void setUp() {
         session = new MockHttpSession();
-        mockToken = mock(UserTokenService.class);
+        mockToken = mock(UserToken.class);
 
         mockUserProfile = new UserProfileDTO(
                 LocalDate.of(1998,6,9),

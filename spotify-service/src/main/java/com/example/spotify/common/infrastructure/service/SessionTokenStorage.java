@@ -1,40 +1,38 @@
-package com.example.spotify.auth.infrastructure.service;
+package com.example.spotify.common.infrastructure.service;
 
-import com.example.spotify.auth.domain.entity.OAuth2Token;
-import com.example.spotify.auth.domain.service.TokenStorageService;
-import com.example.spotify.auth.domain.service.UserTokenService;
-import com.example.spotify.auth.infrastructure.adapter.OAuth2TokenAdapter;
+import com.example.spotify.auth.domain.service.TokenStoragePort;
+import com.example.spotify.auth.domain.service.UserToken;
+import com.example.spotify.common.infrastructure.adapter.OAuth2TokenAdapter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.michaelthelin.spotify.model_objects.specification.User;
 
 @Service
-public class SessionTokenStorageService implements TokenStorageService {
+public class SessionTokenStorage implements TokenStoragePort {
 
     private final HttpServletRequest request;
     private final OAuth2TokenAdapter tokenAdapter;
     private static final String TOKEN_KEY = "spotifyAccessToken";
     private static final String REFRESH_TOKEN_KEY = "spotifyRefreshToken";
     private static final String TOKEN_EXPIRY_KEY = "spotifyTokenExpiry";
-    private static final Logger logger = LoggerFactory.getLogger(SessionTokenStorageService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SessionTokenStorage.class);
 
-    public SessionTokenStorageService(HttpServletRequest request, OAuth2TokenAdapter tokenAdapter) {
+    public SessionTokenStorage(HttpServletRequest request, OAuth2TokenAdapter tokenAdapter) {
         this.request = request;
         this.tokenAdapter = tokenAdapter;
     }
 
     @Override
-    public void storeUserToken(HttpSession session, UserTokenService token) {
+    public void storeUserToken(HttpSession session, UserToken token) {
         session.setAttribute(TOKEN_KEY, token.getAccessToken());
         session.setAttribute(REFRESH_TOKEN_KEY, token.getRefreshToken());
         session.setAttribute(TOKEN_EXPIRY_KEY, token.getExpiresAt().toEpochMilli());
     }
 
     @Override
-    public UserTokenService retrieveUserToken() {
+    public UserToken retrieveUserToken() {
         HttpSession session = request.getSession(false);
         if (session == null) return null;
 

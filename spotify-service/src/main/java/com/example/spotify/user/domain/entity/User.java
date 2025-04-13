@@ -1,6 +1,6 @@
 package com.example.spotify.user.domain.entity;
 
-import com.example.spotify.auth.domain.service.UserTokenService;
+import com.example.spotify.auth.domain.service.UserToken;
 import jakarta.annotation.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 
 @Table(name = "users", schema = "spotify")
-public class SpotifyUser {
+public class User {
     @Id
     private String id;
 
@@ -42,10 +42,10 @@ public class SpotifyUser {
     private String userRegistredId;
 
     @Deprecated
-    public SpotifyUser() {}
+    public User() {}
 
-    public SpotifyUser(String id, LocalDate birthdate, String country, String displayName, String email, String externalUrls,
-                       int followersCount, String href, String photoCover, String spotifyUri, String type) {
+    public User(String id, LocalDate birthdate, String country, String displayName, String email, String externalUrls,
+                int followersCount, String href, String photoCover, String spotifyUri, String type) {
         this.id = id;
         this.birthdate = birthdate;
         this.country = country;
@@ -74,7 +74,7 @@ public class SpotifyUser {
     public LocalDateTime getLastSeen() { return last_seen; }
     public String getUserRegistredId() { return userRegistredId; }
 
-    public SpotifyUser updateToken(UserTokenService newToken) {
+    public User updateToken(UserToken newToken) {
         this.accesstoken = newToken.getAccessToken();
         this.refreshtoken = newToken.getRefreshToken();
         this.tokenExpiry = LocalDateTime.from(newToken.getExpiresAt());

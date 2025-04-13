@@ -1,4 +1,4 @@
-package com.example.spotify.auth.infrastructure.repository;
+package com.example.spotify.common.infrastructure.repository;
 
 import com.example.spotify.auth.domain.repository.AuthStateRepository;
 import org.springframework.data.redis.core.StringRedisTemplate;

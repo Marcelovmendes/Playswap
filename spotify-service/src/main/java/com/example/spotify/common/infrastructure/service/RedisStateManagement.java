@@ -1,19 +1,18 @@
-package com.example.spotify.auth.infrastructure.service;
+package com.example.spotify.common.infrastructure.service;
 
 
 import com.example.spotify.auth.domain.repository.AuthStateRepository;
-import com.example.spotify.auth.domain.service.StateManagementService;
+import com.example.spotify.auth.domain.service.StateManagementPort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Service
-public class RedisStateManagementService implements StateManagementService {
+public class RedisStateManagement implements StateManagementPort {
 
-     private static final Duration DEFAULT_TIMEOUT = Duration.ofMinutes(10);
      private final AuthStateRepository repository;
 
-    public RedisStateManagementService(AuthStateRepository repository) {
+    public RedisStateManagement(AuthStateRepository repository) {
         this.repository = repository;
     }
     @Override

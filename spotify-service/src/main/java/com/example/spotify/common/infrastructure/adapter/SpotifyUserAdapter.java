@@ -1,27 +1,25 @@
-package com.example.spotify.auth.infrastructure.adapter;
+package com.example.spotify.common.infrastructure.adapter;
 
-import com.example.spotify.auth.domain.service.UserTokenService;
+import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.exception.AuthenticationException;
-import com.example.spotify.common.exception.ExceptionType;
+import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.SpotifyApiException;
-import com.example.spotify.user.application.CurrentUserService;
-import com.example.spotify.user.domain.entity.SpotifyUser;
+import com.example.spotify.user.domain.UserProfilePort;
+import com.example.spotify.user.domain.entity.User;
 import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Component
-public class SpotifyUserAdapter implements CurrentUserService {
+public class SpotifyUserAdapter implements UserProfilePort {
 
     private final static Logger log = LoggerFactory.getLogger(SpotifyUserAdapter.class);
 
@@ -32,7 +30,7 @@ public class SpotifyUserAdapter implements CurrentUserService {
     }
 
     @Override
-    public User getCurrentUsersProfileSync(UserTokenService tokenAccess){
+    public se.michaelthelin.spotify.model_objects.specification.User getCurrentUsersProfileSync(UserToken tokenAccess){
         try {
         spotifyApi.setAccessToken(tokenAccess.getAccessToken());
         GetCurrentUsersProfileRequest request = spotifyApi.getCurrentUsersProfile().build();
@@ -41,32 +39,32 @@ public class SpotifyUserAdapter implements CurrentUserService {
         } catch (IOException e) {
             log.error("Communication error when retrieving profile {}", e.getMessage());
             throw new SpotifyApiException("Communication error with Spotify API",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         } catch (SpotifyWebApiException e) {
             if (e.getMessage().contains("401")) {
                 log.warn("Invalid Token {}", e.getMessage());
                 throw new AuthenticationException("Token expired or invalid",
-                        ExceptionType.TOKEN_EXPIRED);
+                        ErrorType.TOKEN_EXPIRED);
             }
             log.error("SpotifyApi Error: {}", e.getMessage());
             throw new SpotifyApiException("Spotify API error",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         } catch (ParseException e) {
             log.error("Error processing response: {}", e.getMessage());
             throw new SpotifyApiException("Invalid response from Spotify API",
-                    ExceptionType.SPOTIFY_API_EXCEPTION);
+                    ErrorType.SPOTIFY_API_EXCEPTION);
         }
     }
 
     @Override
-    public SpotifyUser getCurrentUsersProfileAsync(UserTokenService tokenAccess) {
+    public User getCurrentUsersProfileAsync(UserToken tokenAccess) {
         spotifyApi.setAccessToken(tokenAccess.getAccessToken());
         GetCurrentUsersProfileRequest user = spotifyApi.getCurrentUsersProfile().build();
 
         return convertUserToSpotifyUserEntity(user.executeAsync().join());
     }
 
-    private SpotifyUser convertUserToSpotifyUserEntity(User user) {
+    private User convertUserToSpotifyUserEntity(se.michaelthelin.spotify.model_objects.specification.User user) {
         LocalDate birthdate = null;
         if (user.getBirthdate() != null) {
             try {
@@ -80,7 +78,7 @@ public class SpotifyUserAdapter implements CurrentUserService {
         if (user.getImages() != null && user.getImages().length > 0) {
             photoUrl = user.getImages()[0].getUrl();
         }
-        return new SpotifyUser(
+        return new User(
                 user.getId(),
                 birthdate,
                 user.getCountry().getAlpha3(),
