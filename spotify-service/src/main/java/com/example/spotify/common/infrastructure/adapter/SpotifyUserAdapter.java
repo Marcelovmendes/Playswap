@@ -4,6 +4,7 @@ import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.SpotifyApiException;
+import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.User;
@@ -24,11 +25,12 @@ import java.time.format.DateTimeFormatter;
 public class SpotifyUserAdapter implements UserProfilePort {
 
     private final static Logger log = LoggerFactory.getLogger(SpotifyUserAdapter.class);
-
     private final SpotifyApi spotifyApi;
+    private final SpotifyApiExceptionTranslator exceptionTranslator;
 
-    public SpotifyUserAdapter(SpotifyApi spotifyApi) {
+    public SpotifyUserAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTranslator) {
         this.spotifyApi = spotifyApi;
+        this.exceptionTranslator = exceptionTranslator;
     }
 
     @Override
@@ -38,23 +40,9 @@ public class SpotifyUserAdapter implements UserProfilePort {
         GetCurrentUsersProfileRequest request = spotifyApi.getCurrentUsersProfile().build();
 
             return request.execute();
-        } catch (IOException e) {
-            log.error("Communication error when retrieving profile {}", e.getMessage());
-            throw new SpotifyApiException("Communication error with Spotify API",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
-        } catch (SpotifyWebApiException e) {
-            if (e.getMessage().contains("401")) {
-                log.warn("Invalid Token {}", e.getMessage());
-                throw new AuthenticationException("Token expired or invalid",
-                        ErrorType.TOKEN_EXPIRED);
-            }
-            log.error("SpotifyApi Error: {}", e.getMessage());
-            throw new SpotifyApiException("Spotify API error",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
-        } catch (ParseException e) {
-            log.error("Error processing response: {}", e.getMessage());
-            throw new SpotifyApiException("Invalid response from Spotify API",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
+        } catch (Exception e) {
+            log.error("Error exchanging code for token", e);
+            throw exceptionTranslator.translate(e);
         }
     }
 

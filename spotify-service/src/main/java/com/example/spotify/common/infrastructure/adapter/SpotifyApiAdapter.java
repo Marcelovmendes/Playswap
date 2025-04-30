@@ -3,10 +3,7 @@ package com.example.spotify.common.infrastructure.adapter;
 
 import com.example.spotify.auth.domain.entity.AuthenticationToken;
 import com.example.spotify.auth.domain.service.AuthenticationPort;
-import com.example.spotify.common.exception.ApplicationException;
-import com.example.spotify.common.exception.AuthenticationException;
-import com.example.spotify.common.exception.ErrorType;
-import com.example.spotify.common.exception.SpotifyApiException;
+import com.example.spotify.common.exception.*;
 import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +21,11 @@ public class SpotifyApiAdapter implements AuthenticationPort {
 
     private static final Logger log = LoggerFactory.getLogger(SpotifyApiAdapter.class);
     private final SpotifyApi spotifyApi;
+    private final SpotifyApiExceptionTranslator exceptionTralator;
 
-    public SpotifyApiAdapter(SpotifyApi spotifyApi) {
+    public SpotifyApiAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTralator) {
         this.spotifyApi = spotifyApi;
+        this.exceptionTralator = exceptionTralator;
     }
 
     @Override
@@ -38,7 +37,8 @@ public class SpotifyApiAdapter implements AuthenticationPort {
                  .build()
                  .execute();
      } catch (Exception e) {
-         throw new SpotifyApiException("Error creating authorization URI", ErrorType.SPOTIFY_API_EXCEPTION);
+         log.error("Error creating authorization URI", e);
+         throw exceptionTralator.translate(e);
      }
 
     }
@@ -55,15 +55,9 @@ public class SpotifyApiAdapter implements AuthenticationPort {
                        credentials.getExpiresIn()
                );
 
-           } catch (IOException e) {
-               log.error("IO error exchanging code for token", e);
-               throw new AuthenticationException("Error communicating with Spotify API", ErrorType.AUTHENTICATION_EXCEPTION);
-           } catch (SpotifyWebApiException e) {
-               log.error("Spotify API error rejecting code for token", e);
-               throw new AuthenticationException("Spotify rejected the authorization code", ErrorType.AUTHENTICATION_EXCEPTION);
-           } catch (ParseException e) {
-               log.error("Parse error processing token response", e);
-               throw new ApplicationException("Error parsing response from Spotify API", ErrorType.SPOTIFY_API_EXCEPTION);
+           } catch (Exception e) {
+               log.error("Error exchanging code for token", e);
+               throw exceptionTralator.translate(e);
            }
 
     }
