@@ -1,63 +1,43 @@
 package com.example.spotify.user.domain.entity;
 
-import jakarta.annotation.Nullable;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-//TODO Ver quais campos vao ser necessários
+import java.util.Objects;
 
 
-@Table(name = "users", schema = "spotify")
-public class User {
-    @Id
-    @Column("id")
-    private UUID id = UUID.randomUUID();
 
-    @Nullable
-    @Column("birth_date")
-    private LocalDate birthdate;
-    private String country;
-    @Column("display_name")
-    private String displayName;
-    private String email;
-    private String externalUrls;
-    @Column("followers_count")
-    private int followersCount;
-    @Column("hrf")
-    private String href;
-    @Nullable
-    @Column("photo_cover")
-    private String photoCover;
-    @Column("spotify_uri")
-    private String spotifyUri;
-    private String type;
-    @CreatedDate
-    @Column("created_at")
-    private LocalDateTime createdAt;
+public final class User {
+    private final UserId id;
+    private final LocalDate birthdate;
+    private final String country;
+    private final String displayName;
+    private final Email email;
+    private final String externalUrls;
+    private final int followersCount;
+    private final String href;
+    private final String photoCover;
+    private final String spotifyUri;
+    private final String type;
+    private final String userRegisteredId;
 
-    @LastModifiedDate
-    @Column("updated_at")
-    private LocalDateTime updatedAt;
+    public User(
+            UserId id,
+            LocalDate birthdate,
+            String country,
+            String displayName,
+            Email email,
+            String externalUrls,
+            int followersCount,
+            String href,
+            String photoCover,
+            String spotifyUri,
+            String type,
+            String userRegisteredId) {
 
-    @Column("registered_user_id")
-    private String userRegisteredId;
-
-    @Deprecated
-    public User() {}
-
-    public User(LocalDate birthdate, String country, String displayName, String email, String externalUrls,
-                int followersCount, String href, String photoCover, String spotifyUri, String type,String userRegisteredId) {
-        this.birthdate = birthdate;
+        this.id = Objects.requireNonNull(id, "ID não pode ser nulo");
+        this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
+        this.birthdate = birthdate; // Opcional
         this.country = country;
         this.displayName = displayName;
-        this.email = email;
         this.externalUrls = externalUrls;
         this.followersCount = followersCount;
         this.href = href;
@@ -66,27 +46,12 @@ public class User {
         this.type = type;
         this.userRegisteredId = userRegisteredId;
     }
-    public User(UUID id,LocalDate birthdate, String country, String displayName, String email, String externalUrls,
-                int followersCount, String href, String photoCover, String spotifyUri, String type,String userRegisteredId) {
-        this.id = id;
-        this.birthdate = birthdate;
-        this.country = country;
-        this.displayName = displayName;
-        this.email = email;
-        this.externalUrls = externalUrls;
-        this.followersCount = followersCount;
-        this.href = href;
-        this.photoCover = photoCover;
-        this.spotifyUri = spotifyUri;
-        this.type = type;
-        this.userRegisteredId = userRegisteredId;
-    }
-
-    public UUID getId() { return id; }
+    public UserId getId() { return id; }
     public LocalDate getBirthdate() { return birthdate; }
     public String getCountry() { return country; }
     public String getDisplayName() { return displayName; }
-    public String getEmail() { return email; }
+    public Email getEmail() { return email; }
+    public String getEmailAddress() { return email.getValue(); }
     public String getExternalUrls() { return externalUrls; }
     public int getFollowersCount() { return followersCount; }
     public String getHref() { return href; }
@@ -94,11 +59,5 @@ public class User {
     public String getSpotifyUri() { return spotifyUri; }
     public String getType() { return type; }
     public String getUserRegisteredId() { return userRegisteredId; }
-
-
-    public User copyWithId(UUID id) {
-        return new User(id, birthdate, country, displayName, email, externalUrls, followersCount, href, photoCover, spotifyUri, type, userRegisteredId);
-    }
-
-
+    
 }

@@ -8,7 +8,7 @@ import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;
 import com.example.spotify.user.domain.entity.User;
-import com.example.spotify.user.domain.repository.UserRepository;
+import com.example.spotify.common.infrastructure.repository.UserJdbcRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +18,9 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserProfilePort spotifyUserAdapter;
-    private final UserRepository repository;
+    private final UserJdbcRepository repository;
 
-    public UserServiceImpl(UserProfilePort spotifyUserAdapter, UserRepository repository) {
+    public UserServiceImpl(UserProfilePort spotifyUserAdapter, UserJdbcRepository repository) {
         this.spotifyUserAdapter = spotifyUserAdapter;
         this.repository = repository;
     }
@@ -31,12 +31,13 @@ public class UserServiceImpl implements UserService {
                   ErrorType.AUTHENTICATION_EXCEPTION);
 
          User userData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
-
+/***
          if(userData.getEmail() == null || userData.getEmail().isEmpty()) {
              throw new UserProfileException("Email not found in Spotify user data",
                      ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
          }
-         User persistedUser = repository.findByEmail(userData.getEmail()).orElse(userData);
+***/
+         User persistedUser = repository.findByEmail(userData.getEmail().getValue()).orElse(userData);
 
         boolean isNewUser = persistedUser == userData;
         if (isNewUser) {
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     }
     private UserProfileDTO convertToProfileDTO(User user) {
-
+/***
        return new UserProfileDTO(
                 user.getBirthdate(),
                 user.getCountry(),
@@ -68,6 +69,7 @@ public class UserServiceImpl implements UserService {
                 user.getType()
 
         );
-
+***/
+         return null;
     }
 }
