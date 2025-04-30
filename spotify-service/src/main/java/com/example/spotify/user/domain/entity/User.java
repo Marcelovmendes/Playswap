@@ -17,7 +17,8 @@ import java.util.UUID;
 @Table(name = "users", schema = "spotify")
 public class User {
     @Id
-    private UUID id;
+    @Column("id")
+    private UUID id = UUID.randomUUID();
 
     @Nullable
     @Column("birth_date")

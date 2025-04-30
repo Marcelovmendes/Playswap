@@ -41,11 +41,6 @@ public class UserServiceImpl implements UserService {
         boolean isNewUser = persistedUser == userData;
         if (isNewUser) {
             try {
-                logger.info("external_urls length: {}", userData.getExternalUrls().length());
-                logger.info("photo_cover length: {}", userData.getPhotoCover() != null ? userData.getPhotoCover().length() : 0);
-                logger.info("spotify_uri length: {}", userData.getSpotifyUri().length());
-                logger.info("registered_user_id length: {}", userData.getUserRegisteredId().length());
-
                 persistedUser = repository.save(userData);
                 logger.info("New user saved successfully: {}", userData.getEmail());
             } catch (Exception e) {

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,14 +24,22 @@ public class PlaylistServiceImpl implements PlaylistsService {
     @Override
     public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
 
-        if (accessToken != null && !accessToken.isEmpty()) {
             CompletableFuture<Paging<PlaylistSimplified>> playlistsData = playlist.
                     getListOfCurrentUsersPlaylistsAsync(accessToken);
              playlistsData.join();
-            log.info("Playlists data: {}", playlistsData);
-            return playlistsData;
+            log.info("Playlists data: {}", playlistsData.join().getTotal());
 
-        }
-        return null;
+
+
+
+            return playlistsData;
+    }
+
+    @Override
+    public CompletableFuture<Paging<PlaylistTrack>> getPlaylistTracksAsync(String accessToken, String playlistId) {
+        CompletableFuture<Paging<PlaylistTrack>> playlistTracks = playlist.getPlaylistTracksAsync(accessToken, playlistId);
+        playlistTracks.join();
+        log.info("Playlist tracks data: {}", playlistTracks.join().getTotal());
+        return playlistTracks;
     }
 }

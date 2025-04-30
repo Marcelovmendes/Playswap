@@ -1,23 +1,26 @@
 package com.example.spotify.user.domain.entity;
 
-import org.springframework.data.relational.core.conversion.MutableAggregateChange;
-import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 import org.springframework.stereotype.Component;
 import reactor.util.annotation.NonNull;
 
 import java.util.UUID;
 
 @Component
-public class UserEntityCallback implements BeforeSaveCallback<User> {
-
+public class UserEntityCallback implements BeforeConvertCallback<User> {
 
     @Override
     @NonNull
-    public User onBeforeSave(User aggregate, MutableAggregateChange<User> aggregateChange) {
-
+    public User onBeforeConvert(@NonNull User user) {
         System.out.println("Callback chamado!");
-        return (aggregate.getId() == null)
-                ? aggregate.copyWithId(UUID.randomUUID())
-                : aggregate;
+
+        if (user.getId() == null) {
+            UUID newId = UUID.randomUUID();
+            System.out.println("Generated new UUID: " + newId);
+            return user.copyWithId(newId);
+        }
+
+        return user;
     }
 }
