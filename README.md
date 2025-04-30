@@ -1,4 +1,3 @@
-# Playswap
 # 🎵 PlaySwap 
 
 # About services 
@@ -54,11 +53,14 @@ spotify.client-id=[your-spotify-client-id]
 spotify.client-secret=[your-spotify-client-secret]
 spotify.redirect-uri=http://localhost:8080/auth/callback
 spotify.auth.scopes= "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read"
+
+
 #PSQL
 spring.datasource.url=jdbc:postgresql://localhost:5432/playswap
 spring.datasource.username=postgres
 spring.data.jdbc.dialect=postgresql
 spring.sql.init.platform=postgresql
+
 #Redis
 spring.data.redis.host=localhost
 spring.data.redis.port=6379
@@ -70,12 +72,16 @@ spring.cache.type=redis
 ```
 # Clone the repository
 git clone [repository-url]
+
 # Navigate to project directory
 cd spotify-service
+
 # Build the project
 mvn clean package
+
 # Run the application
 java -jar target/spotify-service.jar
+
 ```
 
 ### Run Redis
@@ -83,9 +89,12 @@ java -jar target/spotify-service.jar
 ``` 
 # On Docker
 docker run --name redis -p 6379:6379 -d redis
+
 # Check image
 docker ps
+
 ```
+
 
 
 
