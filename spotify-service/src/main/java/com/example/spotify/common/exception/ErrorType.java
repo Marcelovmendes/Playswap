@@ -10,7 +10,9 @@ public enum ErrorType {
 
     GENERAL_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR),
 
-    RESOURCE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND);
+    RESOURCE_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND),
+
+    DOMAIN_EXCEPTION(HttpStatus.BAD_REQUEST);
 
 
     private final HttpStatus httpStatus;
