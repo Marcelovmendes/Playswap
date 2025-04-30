@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.DataFormatException;
 
 @Component
 public class UserPersistenceAdapter implements UserRepository {
@@ -56,7 +55,7 @@ public class UserPersistenceAdapter implements UserRepository {
     private UserJdbcEntity adaptToJdbcEntity(User user){
 
         return new UserJdbcEntity(
-                user.getId().getValue(),
+                user.getId().value(),
                 user.getBirthdate(),
                 user.getCountry(),
                 user.getDisplayName(),

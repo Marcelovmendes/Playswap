@@ -51,7 +51,7 @@ public final class User {
     public String getCountry() { return country; }
     public String getDisplayName() { return displayName; }
     public Email getEmail() { return email; }
-    public String getEmailAddress() { return email.getValue(); }
+    public String getEmailAddress() { return email.value(); }
     public String getExternalUrls() { return externalUrls; }
     public int getFollowersCount() { return followersCount; }
     public String getHref() { return href; }

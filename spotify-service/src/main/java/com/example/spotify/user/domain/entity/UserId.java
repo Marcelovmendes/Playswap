@@ -1,14 +1,8 @@
 package com.example.spotify.user.domain.entity;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public class UserId {
-    private final UUID value;
-
-    public UserId(UUID value) {
-        this.value = value;
-    }
+public record UserId(UUID value) {
 
     public static UserId generate() {
         return new UserId(UUID.randomUUID());
@@ -18,12 +12,8 @@ public class UserId {
         try {
             return new UserId(UUID.fromString(id));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("ID de usuário inválido",e);
+            throw new IllegalArgumentException("ID de usuário inválido", e);
         }
-    }
-
-    public UUID getValue() {
-        return value;
     }
 
 

@@ -5,7 +5,9 @@ import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.SpotifyApiException;
 import com.example.spotify.user.domain.UserProfilePort;
+import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.User;
+import com.example.spotify.user.domain.entity.UserId;
 import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,39 +63,40 @@ public class SpotifyUserAdapter implements UserProfilePort {
         spotifyApi.setAccessToken(tokenAccess.getAccessToken());
         GetCurrentUsersProfileRequest user = spotifyApi.getCurrentUsersProfile().build();
 
-        return convertUserToSpotifyUserEntity(user.executeAsync().join());
+        return convertUserToUserEntity(user.executeAsync().join());
     }
 
-    private User convertUserToSpotifyUserEntity(se.michaelthelin.spotify.model_objects.specification.User user) {
+
+    private User convertUserToUserEntity(se.michaelthelin.spotify.model_objects.specification.User spotifyUser) {
         LocalDate birthdate = null;
-        if (user.getBirthdate() != null) {
+        if (spotifyUser.getBirthdate() != null) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                birthdate = LocalDate.parse(user.getBirthdate(), formatter);
+                birthdate = LocalDate.parse(spotifyUser.getBirthdate(), formatter);
             } catch (Exception e) {
-                log.warn("Data de nascimento não pôde ser parseada: {}", user.getBirthdate());
+                log.warn("Data de nascimento não pôde ser parseada: {}", spotifyUser.getBirthdate());
             }
         }
         String photoUrl = null;
-        if (user.getImages() != null && user.getImages().length > 0) {
-            photoUrl = user.getImages()[0].getUrl();
+        if (spotifyUser.getImages() != null && spotifyUser.getImages().length > 0) {
+            photoUrl = spotifyUser.getImages()[0].getUrl();
         }
-        /***
+
         return new User(
+                UserId.generate(),
                 birthdate,
-                user.getCountry().getAlpha3(),
-                user.getDisplayName(),
-                user.getEmail(),
-                user.getExternalUrls().toString(),
-                user.getFollowers().getTotal(),
-                user.getHref(),
+                spotifyUser.getCountry() != null ? spotifyUser.getCountry().getAlpha3() : null,
+                spotifyUser.getDisplayName(),
+                Email.of(spotifyUser.getEmail()),
+                spotifyUser.getExternalUrls().get("spotify"),
+                spotifyUser.getFollowers() != null ? spotifyUser.getFollowers().getTotal() : 0,
+                spotifyUser.getHref(),
                 photoUrl,
-                user.getUri(),
-                user.getType().getType(),
-                user.getId()
+                spotifyUser.getUri(),
+                spotifyUser.getType().getType(),
+                spotifyUser.getId() // Spotify ID
         );
-         ***/
-        return null;
+
     }
 
 }

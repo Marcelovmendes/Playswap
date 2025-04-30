@@ -5,15 +5,9 @@ import jakarta.ws.rs.NotAcceptableException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class Email {
+public record Email(String value) {
     private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
-
-    private final String value;
-
-    public Email(String value) {
-        this.value = value;
-    }
+            Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     public static Email of(String email) {
         if (email == null || email.isEmpty()) {
@@ -27,12 +21,8 @@ public class Email {
         return new Email(email);
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public boolean isValid() {
-        return EMAIL_PATTERN.matcher(value).matches();
+        return EMAIL_PATTERN.matcher(value).matches() && !value.isEmpty();
     }
 
     @Override

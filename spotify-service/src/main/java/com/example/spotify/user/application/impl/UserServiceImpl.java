@@ -7,20 +7,23 @@ import com.example.spotify.common.exception.UserProfileException;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;
+import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.User;
-import com.example.spotify.common.infrastructure.repository.UserJdbcRepository;
+import com.example.spotify.user.domain.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserProfilePort spotifyUserAdapter;
-    private final UserJdbcRepository repository;
+    private final UserRepository repository;
 
-    public UserServiceImpl(UserProfilePort spotifyUserAdapter, UserJdbcRepository repository) {
+    public UserServiceImpl(UserProfilePort spotifyUserAdapter, UserRepository repository) {
         this.spotifyUserAdapter = spotifyUserAdapter;
         this.repository = repository;
     }
@@ -31,36 +34,38 @@ public class UserServiceImpl implements UserService {
                   ErrorType.AUTHENTICATION_EXCEPTION);
 
          User userData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
-/***
-         if(userData.getEmail() == null || userData.getEmail().isEmpty()) {
+
+         Email email = userData.getEmail();
+
+         if(email.isValid()) {
              throw new UserProfileException("Email not found in Spotify user data",
                      ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
          }
-***/
-         User persistedUser = repository.findByEmail(userData.getEmail().getValue()).orElse(userData);
+        try {
+            // Agora usamos o repositório do domínio
+            User persistedUser = repository.findByEmail(userData.getEmailAddress())
+                    .orElseGet(() -> {
+                        try {
+                            return repository.save(userData);
+                        } catch (ExecutionException e) {
+                            throw new UserProfileException("Erro ao salvar dados do usuário", ErrorType.GENERAL_EXCEPTION);
+                        }
+                    });
 
-        boolean isNewUser = persistedUser == userData;
-        if (isNewUser) {
-            try {
-                persistedUser = repository.save(userData);
-                logger.info("New user saved successfully: {}", userData.getEmail());
-            } catch (Exception e) {
-                logger.error("Error saving user data: {}", e.toString(), e);
-
-            }
+            return mapToDTObject(persistedUser);
+        } catch (Exception e) {
+            logger.error("Erro ao processar perfil do usuário", e);
+            throw new UserProfileException("Erro ao processar perfil do usuário", ErrorType.GENERAL_EXCEPTION);
         }
 
-
-                return convertToProfileDTO(persistedUser);
-
     }
-    private UserProfileDTO convertToProfileDTO(User user) {
-/***
+    private UserProfileDTO mapToDTObject(User user) {
+
        return new UserProfileDTO(
                 user.getBirthdate(),
                 user.getCountry(),
                 user.getDisplayName(),
-                user.getEmail(),
+                user.getEmailAddress(),
                 user.getExternalUrls(),
                 user.getFollowersCount(),
                 user.getHref(),
@@ -69,7 +74,5 @@ public class UserServiceImpl implements UserService {
                 user.getType()
 
         );
-***/
-         return null;
     }
 }
