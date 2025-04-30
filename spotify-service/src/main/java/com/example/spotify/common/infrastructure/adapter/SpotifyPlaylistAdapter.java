@@ -1,21 +1,16 @@
 package com.example.spotify.common.infrastructure.adapter;
 
-import com.example.spotify.common.exception.AuthenticationException;
-import com.example.spotify.common.exception.ErrorType;
-import com.example.spotify.common.exception.SpotifyApiException;
-import org.apache.hc.core5.http.ParseException;
+import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -23,11 +18,13 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SpotifyPlaylistAdapter.class);
     private final SpotifyApi spotifyApi;
+    private final SpotifyApiExceptionTranslator exceptionTranslator;
     private static final String[] ids = new String[]{"2FDTHlrBguDzQkp7PVj16Q"};
 
 
-    public SpotifyPlaylistAdapter(SpotifyApi spotifyApi) {
+    public SpotifyPlaylistAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTranslator) {
         this.spotifyApi = spotifyApi;
+        this.exceptionTranslator = exceptionTranslator;
     }
 
 
@@ -42,21 +39,10 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
 
             return request.execute();
 
-        } catch (IOException e) {
-            throw new SpotifyApiException("Failed to connect to Spotify API",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
-        } catch (SpotifyWebApiException e) {
-            if (e.getMessage().contains("401")) {
-                throw new AuthenticationException("Invalid token",
-                        ErrorType.TOKEN_EXPIRED);
-            }
-            throw new SpotifyApiException("Spotify API error",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
-        } catch (ParseException e) {
-            throw new SpotifyApiException("Error parsing response from Spotify API",
-                    ErrorType.SPOTIFY_API_EXCEPTION);
+        } catch (Exception e) {
+            log.error("Error exchanging code for token", e);
+            throw exceptionTranslator.translate(e);
         }
-
     }
 
     @Override
@@ -71,12 +57,6 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
 
     }
 
-    /***
-     * retorna os albums/playlists
-     * @param accessToken
-     * @return
-     */
-
     @Override
     public CompletableFuture<Track[]> getSeveralTracksAsync(String accessToken) {
         try {
@@ -90,7 +70,7 @@ public class SpotifyPlaylistAdapter implements PlaylistPort {
             return tracks;
         } catch (Exception e) {
             log.info("Error fetching tracks: {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw exceptionTranslator.translate(e);
         }
     }
 

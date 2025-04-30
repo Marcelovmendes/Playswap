@@ -27,14 +27,11 @@ public class GlobalExceptionHandler {
                 status.value(),
                 request.getContextPath(),
                 new Date());
-
         return new ResponseEntity<>(error, status);
     };
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex, WebRequest request) {
-        log.error("General Exception: {}", ex.getMessage(), ex);
-        ErrorType errorType = ErrorType.GENERAL_EXCEPTION;
-        HttpStatus status = errorType.getHttpStatus();
+        log.error("Exception : {}", ex.getMessage(), ex);
 
         ErrorResponse error = new ErrorResponse(
                 "An unexpected error occurred",
@@ -43,12 +40,12 @@ public class GlobalExceptionHandler {
                 request.getContextPath(),
                 new Date());
 
-        return new ResponseEntity<>(error, status);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         log.error("AuthenticationException: {}", ex.getMessage(), ex);
-        ErrorType errorType = ErrorType.AUTHENTICATION_EXCEPTION;
+        ErrorType errorType = ex.getType();
         HttpStatus status = errorType.getHttpStatus();
 
         ErrorResponse error = new ErrorResponse(
@@ -63,7 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SpotifyApiException.class)
     public ResponseEntity<ErrorResponse> handleSpotifyApiException(SpotifyApiException ex, WebRequest request) {
         log.error("SpotifyApiException: {}", ex.getMessage(), ex);
-        ErrorType errorType = ErrorType.SPOTIFY_API_EXCEPTION;
+        ErrorType errorType = ex.getType();
         HttpStatus status = errorType.getHttpStatus();
 
         ErrorResponse error = new ErrorResponse(
@@ -78,7 +75,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserProfileException.class)
     public ResponseEntity<ErrorResponse> handleUserProfileException(UserProfileException ex, WebRequest request) {
         log.error("UserProfileException: {}", ex.getMessage(), ex);
-        ErrorType errorType = ErrorType.RESOURCE_NOT_FOUND_EXCEPTION;
+        ErrorType errorType = ex.getType();
+        HttpStatus status = errorType.getHttpStatus();
+
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(),
+                ex.toString(),
+                status.value(),
+                request.getContextPath(),
+                new Date());
+
+        return new ResponseEntity<>(error, status);
+    }
+    @ExceptionHandler(InfrastructureException.class)
+    public ResponseEntity<ErrorResponse> handleInfrastructureException(InfrastructureException ex, WebRequest request) {
+        log.error("InfrastructureException: {}", ex.getMessage(), ex);
+        ErrorType errorType = ex.getType();
         HttpStatus status = errorType.getHttpStatus();
 
         ErrorResponse error = new ErrorResponse(
