@@ -14,12 +14,16 @@ public class UserEntityCallback implements BeforeConvertCallback<User> {
     @NonNull
     public User onBeforeConvert(@NonNull User user) {
         System.out.println("Callback chamado!");
-
+/***
         if (user.getId() == null) {
             UUID newId = UUID.randomUUID();
             System.out.println("Generated new UUID: " + newId);
             return user.copyWithId(newId);
         }
+
+        return user;
+    }
+ ***/
 
         return user;
     }
