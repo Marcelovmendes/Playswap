@@ -2,7 +2,7 @@ package com.example.spotify.common.infrastructure.persistence;
 
 import com.example.spotify.common.infrastructure.repository.UserJdbcRepository;
 import com.example.spotify.user.domain.entity.Email;
-import com.example.spotify.user.domain.entity.User;
+import com.example.spotify.user.domain.entity.UserEntity;
 import com.example.spotify.user.domain.entity.UserId;
 import com.example.spotify.user.domain.repository.UserRepository;
 import org.springframework.stereotype.Component;
@@ -18,13 +18,13 @@ public class UserPersistenceAdapter implements UserRepository {
         this.jdbcRepository = userRepository;
     }
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<UserEntity> findByEmail(String email) {
         return jdbcRepository.findByEmail(email)
                 .map(this::adaptToDomainEntity);
     }
 
     @Override
-    public User save(User user) throws ExecutionException {
+    public UserEntity save(UserEntity user) throws ExecutionException {
        try {
            UserJdbcEntity jdbcEntity = adaptToJdbcEntity(user);
            UserJdbcEntity savedEntity = jdbcRepository.save(jdbcEntity);
@@ -33,8 +33,8 @@ public class UserPersistenceAdapter implements UserRepository {
            throw new ExecutionException(e);
        }
     }
-    private User adaptToDomainEntity( UserJdbcEntity userJdbcEntity){
-        return new User(
+    private UserEntity adaptToDomainEntity(UserJdbcEntity userJdbcEntity){
+        return new UserEntity(
                 new UserId(userJdbcEntity.getId()),
                 userJdbcEntity.getBirthdate(),
                 userJdbcEntity.getCountry(),
@@ -52,7 +52,7 @@ public class UserPersistenceAdapter implements UserRepository {
 
     }
 
-    private UserJdbcEntity adaptToJdbcEntity(User user){
+    private UserJdbcEntity adaptToJdbcEntity(UserEntity user){
 
         return new UserJdbcEntity(
                 user.getId().value(),

@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PlaylistPort {
     Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(String accessToken);
-    CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(String accessToken);
-    CompletableFuture<Track[]> getSeveralTracksAsync(String accessToken);
-    CompletableFuture<Paging<PlaylistTrack>> getPlaylistTracksAsync(String accessToken, String playlistId);
+    Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync(String accessToken);
+    Track[] getSeveralTracksAsync(String accessToken);
+    Paging<PlaylistTrack> getPlaylistTracksAsync(String accessToken, String playlistId);
 }

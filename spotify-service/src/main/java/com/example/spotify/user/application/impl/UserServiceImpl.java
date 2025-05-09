@@ -8,7 +8,7 @@ import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;
 import com.example.spotify.user.domain.entity.Email;
-import com.example.spotify.user.domain.entity.User;
+import com.example.spotify.user.domain.entity.UserEntity;
 import com.example.spotify.user.domain.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,7 @@ public class UserServiceImpl implements UserService {
          if (token == null || token.getAccessToken() == null) throw new AuthenticationException("Invalid token provided",
                   ErrorType.AUTHENTICATION_EXCEPTION);
 
-         User userData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
-
+         UserEntity userData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
          Email email = userData.getEmail();
 
          if(email.isValid()) {
@@ -43,23 +42,23 @@ public class UserServiceImpl implements UserService {
          }
         try {
             // Agora usamos o repositório do domínio
-            User persistedUser = repository.findByEmail(userData.getEmailAddress())
+            UserEntity persistedUser = repository.findByEmail(userData.getEmailAddress())
                     .orElseGet(() -> {
                         try {
                             return repository.save(userData);
                         } catch (ExecutionException e) {
-                            throw new UserProfileException("Erro ao salvar dados do usuário", ErrorType.GENERAL_EXCEPTION);
+                            throw new UserProfileException("Erro ao salvar dados do usuário", ErrorType.SERVER_ERROR);
                         }
                     });
 
             return mapToDTObject(persistedUser);
         } catch (Exception e) {
             logger.error("Erro ao processar perfil do usuário", e);
-            throw new UserProfileException("Erro ao processar perfil do usuário", ErrorType.GENERAL_EXCEPTION);
+            throw new UserProfileException("Erro ao processar perfil do usuário", ErrorType.SERVER_ERROR);
         }
 
     }
-    private UserProfileDTO mapToDTObject(User user) {
+    private UserProfileDTO mapToDTObject(UserEntity user) {
 
        return new UserProfileDTO(
                 user.getBirthdate(),

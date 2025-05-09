@@ -9,32 +9,23 @@ import java.text.ParseException;
 @Component
 public class SpotifyApiExceptionTranslator {
 
-    public RuntimeException translate (Exception e) {
+    public RuntimeException translate (Throwable e) {
+        if (e instanceof Error) throw (Error) e;
 
         if (e instanceof ApplicationException) return (ApplicationException) e;
 
         if (e instanceof IOException) {
-            return new InfrastructureException(
-                    "Error communicating with Spotify API", e, ErrorType.SPOTIFY_API_EXCEPTION
-            );
+            return new InfrastructureException("Error communicating with Spotify API", e, ErrorType.API_UNAVAILABLE_EXCEPTION);
         }
         if (e instanceof SpotifyWebApiException) {
             if (e.getMessage().contains("401")) {
-                return new AuthenticationException(
-                        "Token is invalid or expired", e, ErrorType.TOKEN_EXPIRED
-                );
+                return new AuthenticationException("Token is invalid or expired", e, ErrorType.AUTHENTICATION_EXCEPTION);
             }
-            return new SpotifyApiException(
-                    "Spotify API error", e, ErrorType.SPOTIFY_API_EXCEPTION
-            );
+            return new SpotifyApiException("Spotify API error", e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
         if (e instanceof ParseException) {
-            return new InfrastructureException(
-                    "Analysis error while parsing response", e, ErrorType.SPOTIFY_API_EXCEPTION
-            );
+            return new InfrastructureException("Analysis error while parsing response", e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
-        return new InfrastructureException(
-                "Unexpected error while communicating with Spotify API", e, ErrorType.GENERAL_EXCEPTION
-        );
+        return new InfrastructureException("Unexpected error while communicating with Spotify API", e, ErrorType.SERVER_ERROR);
     }
 }

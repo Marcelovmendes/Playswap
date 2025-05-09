@@ -33,7 +33,7 @@ public class RedisAuthStateRepository implements AuthStateRepository {
         if ( state == null || state.isEmpty()) return false;
         String key = REDIS_AUTH_STATE + state;
         Boolean exists = redisTemplate.hasKey(key);
-        return Boolean.TRUE.equals(exists);
+        return exists;
     }
 
     @Override

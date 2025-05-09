@@ -22,24 +22,19 @@ public class PlaylistServiceImpl implements PlaylistsService {
     }
 
     @Override
-    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
+    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
 
             CompletableFuture<Paging<PlaylistSimplified>> playlistsData = playlist.
                     getListOfCurrentUsersPlaylistsAsync(accessToken);
-             playlistsData.join();
             log.info("Playlists data: {}", playlistsData.join().getTotal());
 
-
-
-
-            return playlistsData;
+            return playlistsData.join();
     }
 
     @Override
-    public CompletableFuture<Paging<PlaylistTrack>> getPlaylistTracksAsync(String accessToken, String playlistId) {
+    public Paging<PlaylistTrack> getPlaylistTracksAsync(String accessToken, String playlistId) {
         CompletableFuture<Paging<PlaylistTrack>> playlistTracks = playlist.getPlaylistTracksAsync(accessToken, playlistId);
-        playlistTracks.join();
         log.info("Playlist tracks data: {}", playlistTracks.join().getTotal());
-        return playlistTracks;
+        return playlistTracks.join();
     }
 }

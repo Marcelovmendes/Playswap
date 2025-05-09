@@ -5,7 +5,7 @@ import java.util.Objects;
 
 
 
-public final class User {
+public final class UserEntity {
     private final UserId id;
     private final LocalDate birthdate;
     private final String country;
@@ -19,19 +19,8 @@ public final class User {
     private final String type;
     private final String userRegisteredId;
 
-    public User(
-            UserId id,
-            LocalDate birthdate,
-            String country,
-            String displayName,
-            Email email,
-            String externalUrls,
-            int followersCount,
-            String href,
-            String photoCover,
-            String spotifyUri,
-            String type,
-            String userRegisteredId) {
+    public UserEntity(UserId id, LocalDate birthdate, String country, String displayName, Email email, String externalUrls,
+            int followersCount, String href, String photoCover, String spotifyUri, String type, String userRegisteredId) {
 
         this.id = Objects.requireNonNull(id, "ID não pode ser nulo");
         this.email = Objects.requireNonNull(email, "Email não pode ser nulo");

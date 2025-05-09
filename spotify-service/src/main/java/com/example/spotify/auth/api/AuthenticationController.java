@@ -1,4 +1,5 @@
 package com.example.spotify.auth.api;
+import com.example.spotify.auth.application.AuthenticationService;
 import com.example.spotify.auth.application.impl.SpotifyAuthenticationService;
 import com.example.spotify.auth.domain.service.TokenStoragePort;
 import com.example.spotify.auth.domain.service.UserToken;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
 import java.net.URI;
 
 @RestController
@@ -22,21 +24,16 @@ public class AuthenticationController {
     private final AuthenticationService authService;
     private final TokenStoragePort tokenStoragePort;
 
-    public AuthenticationController(SpotifyAuthenticationService authService, TokenStoragePort tokenStoragePort) {
+    public AuthenticationController(AuthenticationService authService, TokenStoragePort tokenStoragePort) {
         this.authService = authService;
         this.tokenStoragePort = tokenStoragePort;
     }
 
     @GetMapping("/")
-    public ResponseEntity<String> initiateAuthentication() {
-        try {
+    public ResponseEntity<String> initiateAuthentication(){
             URI response = authService.initiateAuthentication();
 
-            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Falha ao iniciar autenticação", e);
-            return new ResponseEntity<>( "Falha ao iniciar autenticação do usuário",HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return ResponseEntity.ok(response.toString());
     }
 
     @GetMapping("/callback")

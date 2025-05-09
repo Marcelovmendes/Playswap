@@ -11,54 +11,48 @@ import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 
 import java.io.IOException;
 import java.net.URI;
 
 @Component
-public class SpotifyApiAdapter implements AuthenticationPort {
+public class SpotifyApiAdapter extends ExternalServiceAdapter implements AuthenticationPort {
 
     private static final Logger log = LoggerFactory.getLogger(SpotifyApiAdapter.class);
-    private final SpotifyApi spotifyApi;
-    private final SpotifyApiExceptionTranslator exceptionTralator;
 
     public SpotifyApiAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTralator) {
-        this.spotifyApi = spotifyApi;
-        this.exceptionTralator = exceptionTralator;
+        super(spotifyApi, exceptionTralator);
     }
 
     @Override
     public URI createAuthorizationUri(String codeChallenge, String state, String scopes) {
-     try {
-         return spotifyApi.authorizationCodePKCEUri(codeChallenge)
-                 .state(state)
-                 .scope(scopes)
-                 .build()
-                 .execute();
-     } catch (Exception e) {
-         log.error("Error creating authorization URI", e);
-         throw exceptionTralator.translate(e);
-     }
+                 AuthorizationCodeUriRequest request = spotifyApi.authorizationCodePKCEUri(codeChallenge)
+                         .state(state)
+                         .scope(scopes)
+                         .build();
+
+                 return executeSync(request::execute,
+                "creating authorization URI"
+                  );
 
     }
     @Override
     public AuthenticationToken exchangeCodeForToken(String code, String codeVerifier) {
-           try {
-               AuthorizationCodePKCERequest request = spotifyApi.
-                       authorizationCodePKCE(code, codeVerifier)
+               AuthorizationCodePKCERequest request = spotifyApi
+                       .authorizationCodePKCE(code, codeVerifier)
                        .build();
-               AuthorizationCodeCredentials credentials = request.execute();
+               AuthorizationCodeCredentials credentials = executeSync(request::execute,
+                       "exchanging code for token"
+               );
                return AuthenticationToken.create(
                        credentials.getAccessToken(),
                        credentials.getRefreshToken(),
                        credentials.getExpiresIn()
                );
 
-           } catch (Exception e) {
-               log.error("Error exchanging code for token", e);
-               throw exceptionTralator.translate(e);
-           }
+
 
     }
 

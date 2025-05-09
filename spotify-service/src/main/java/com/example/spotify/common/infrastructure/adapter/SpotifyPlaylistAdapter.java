@@ -1,5 +1,6 @@
 package com.example.spotify.common.infrastructure.adapter;
 
+import com.example.spotify.common.exception.ExternalServiceAdapter;
 import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import org.slf4j.Logger;
@@ -11,87 +12,71 @@ import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
-import java.util.concurrent.CompletableFuture;
-
 @Component
-public class SpotifyPlaylistAdapter implements PlaylistPort {
+public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SpotifyPlaylistAdapter.class);
-    private final SpotifyApi spotifyApi;
-    private final SpotifyApiExceptionTranslator exceptionTranslator;
     private static final String[] ids = new String[]{"2FDTHlrBguDzQkp7PVj16Q"};
 
 
     public SpotifyPlaylistAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTranslator) {
-        this.spotifyApi = spotifyApi;
-        this.exceptionTranslator = exceptionTranslator;
+        super(spotifyApi, exceptionTranslator);
     }
-
-
-
     @Override
     public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(String accessToken){
-        try {
+
         spotifyApi.setAccessToken(accessToken);
         GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
                 .limit(10)
                 .build();
 
-            return request.execute();
-
-        } catch (Exception e) {
-            log.error("Error exchanging code for token", e);
-            throw exceptionTranslator.translate(e);
-        }
-    }
-
-    @Override
-    public CompletableFuture<Paging<PlaylistSimplified>> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
-        spotifyApi.setAccessToken(accessToken);
-        GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists()
-                .limit(10)
-                .build();
-
-        return request.executeAsync();
+            return executeSync(request::execute,
+                    "fetching user playlists"
+            );
 
 
     }
 
     @Override
-    public CompletableFuture<Track[]> getSeveralTracksAsync(String accessToken) {
-        try {
-            spotifyApi.setAccessToken(accessToken);
-
-
-            CompletableFuture<Track[]> tracks = spotifyApi.getSeveralTracks(ids)
-                    .build()
-                    .executeAsync();
-            tracks.join();
-            return tracks;
-        } catch (Exception e) {
-            log.info("Error fetching tracks: {}", e.getMessage());
-            throw exceptionTranslator.translate(e);
-        }
-    }
-
-    /***
-     *  espera os ids das musicas
-     * @param accessToken
-     * @param playlistId
-     * @return
-     */
-
-    @Override
-    public CompletableFuture<Paging<PlaylistTrack>> getPlaylistTracksAsync(String accessToken, String playlistId) {
+    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
         spotifyApi.setAccessToken(accessToken);
 
-        CompletableFuture<Paging<PlaylistTrack>> playlistTracks = spotifyApi.getPlaylistsItems(playlistId)
-                .build()
-                .executeAsync();
-        playlistTracks.join();
+        return executeAsync(
+                spotifyApi.getListOfCurrentUsersPlaylists()
+                        .limit(10)
+                        .build()
+                        .executeAsync(),
+                "fetching user playlists"
+        );
 
-        return playlistTracks;
     }
+
+    @Override
+    public Track[] getSeveralTracksAsync(String accessToken) {
+       spotifyApi.setAccessToken(accessToken);
+
+            return executeAsync(
+                    spotifyApi.getSeveralTracks(ids)
+                            .build()
+                            .executeAsync(),
+                    "fetching tracks"
+            );
+
+
+    }
+
+    @Override
+    public Paging<PlaylistTrack> getPlaylistTracksAsync(String accessToken, String playlistId) {
+        spotifyApi.setAccessToken(accessToken);
+       return  executeAsync(
+               spotifyApi.getPlaylistsItems(playlistId)
+                       .build()
+                       .executeAsync(),
+                "fetching playlist tracks"
+       );
+
+    }
+
 /***
  * espera o id da playlist e retorna as musicas do album
  *   items[]: added_at, added_by, is_local, tracks

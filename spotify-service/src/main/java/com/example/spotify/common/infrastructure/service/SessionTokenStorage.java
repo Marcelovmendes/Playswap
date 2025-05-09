@@ -40,8 +40,6 @@ public class SessionTokenStorage implements TokenStoragePort {
         String refreshToken = (String) session.getAttribute(REFRESH_TOKEN_KEY);
         Long expiryMillis = (Long) session.getAttribute(TOKEN_EXPIRY_KEY);
 
-        if (accessToken == null || refreshToken == null || expiryMillis == null) return null;
-
         return tokenAdapter.createFromSession(accessToken, refreshToken, expiryMillis);
     }
 

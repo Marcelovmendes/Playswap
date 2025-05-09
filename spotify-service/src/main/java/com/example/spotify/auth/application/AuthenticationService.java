@@ -6,6 +6,6 @@ import javax.naming.AuthenticationException;
 import java.net.URI;
 
 public interface AuthenticationService {
-    URI initiateAuthentication() throws AuthenticationException;
+    URI initiateAuthentication();
     AuthenticationToken handleAuthenticationCallback(String code, String state);
 }

@@ -11,6 +11,6 @@ public class InfrastructureException extends ApplicationException{
     }
 
     public InfrastructureException(String message) {
-        super(message, ErrorType.GENERAL_EXCEPTION);
+        super(message, ErrorType.SERVER_ERROR);
     }
 }

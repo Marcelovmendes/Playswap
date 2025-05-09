@@ -35,7 +35,7 @@ public class PlaylistController {
     }
 
      @GetMapping("/")
-    public ResponseEntity<CompletableFuture<Paging<PlaylistSimplified>>> getPlaylists(HttpSession session) {
+    public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists(HttpSession session) {
              log.info("playlist request ID: {}", session.getId());
              String accessToken = (String) session.getAttribute("spotifyAccessToken");
 
@@ -43,8 +43,7 @@ public class PlaylistController {
          if (accessToken == null) {
              return ResponseEntity.status(401).build();
          }
-         CompletableFuture<Paging<PlaylistSimplified>> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync(token);
-         playLists.join();
+       Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync(token);
         return ResponseEntity.ok(playLists);
     }
 
@@ -56,18 +55,16 @@ public class PlaylistController {
 
         CompletableFuture<Track[]> tracks = playlistPort.getSeveralTracksAsync(token);
 
-        tracks.join();
-
         return ResponseEntity.ok(tracks.join());
 
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity<CompletableFuture<Paging<PlaylistTrack>>> getPlaylistTracks(@PathVariable String playlistId, HttpSession session) {
+    public ResponseEntity <Paging<PlaylistTrack>> getPlaylistTracks(@PathVariable String playlistId, HttpSession session) {
         log.info("playlist tracks request ID: {}", session.getId());
 
         String token = authToken.getAccessToken();
 
-        CompletableFuture<Paging<PlaylistTrack>> playlistTracks = playlistsService.getPlaylistTracksAsync(token, playlistId);
+       Paging<PlaylistTrack>playlistTracks = playlistsService.getPlaylistTracksAsync(token, playlistId);
 
         return ResponseEntity.ok(playlistTracks);
     }

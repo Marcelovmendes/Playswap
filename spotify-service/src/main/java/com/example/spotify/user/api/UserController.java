@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("api/spotfy/v1/users/")
+@RequestMapping("api/spotify/v1/users/")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -30,19 +30,13 @@ public class UserController {
 
     @GetMapping("/details")
     public ResponseEntity<?> showDashboard(HttpSession session) {
-          try {
+
               log.info("Callback request ID: {}", session.getId());
               String accessToken = (String) session.getAttribute("spotifyAccessToken");
-              if (accessToken == null) {
-                  log.warn("Tentativa de acesso ao dashboard sem token");
-              }
               UserToken token = tokenStorage.retrieveUserToken();
               UserProfileDTO user = userService.getCurrentUserProfileAsync(token);
 
-              return new ResponseEntity<>(user, HttpStatus.OK);
+              return ResponseEntity.ok(user);
 
-          } catch (Exception e) {
-              return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-          }
     }
 }
