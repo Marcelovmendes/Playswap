@@ -4,17 +4,14 @@ package com.example.spotify.common.infrastructure.adapter;
 import com.example.spotify.auth.domain.entity.AuthenticationToken;
 import com.example.spotify.auth.domain.service.AuthenticationPort;
 import com.example.spotify.common.exception.*;
-import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 
-import java.io.IOException;
 import java.net.URI;
 
 @Component

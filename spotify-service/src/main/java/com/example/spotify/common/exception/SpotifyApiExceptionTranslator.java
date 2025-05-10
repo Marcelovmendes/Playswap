@@ -2,7 +2,6 @@ package com.example.spotify.common.exception;
 
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -15,17 +14,26 @@ public class SpotifyApiExceptionTranslator {
         if (e instanceof ApplicationException) return (ApplicationException) e;
 
         if (e instanceof IOException) {
-            return new InfrastructureException("Error communicating with Spotify API", e, ErrorType.API_UNAVAILABLE_EXCEPTION);
+            return new InfrastructureException(
+                    "Network communication with Spotify API failed: connection issue or service unavailable",
+                    e, ErrorType.API_UNAVAILABLE_EXCEPTION);
         }
         if (e instanceof SpotifyWebApiException) {
             if (e.getMessage().contains("401")) {
-                return new AuthenticationException("Token is invalid or expired", e, ErrorType.AUTHENTICATION_EXCEPTION);
+                return new AuthenticationException(
+                        "Spotify authentication failed: token is invalid or expired. Please refresh credentials",
+                        e, ErrorType.AUTHENTICATION_EXCEPTION);
             }
-            return new SpotifyApiException("Spotify API error", e, ErrorType.SPOTIFY_API_EXCEPTION);
+            return new SpotifyApiException(
+                    "Spotify API returned error code: ",
+                    e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
         if (e instanceof ParseException) {
-            return new InfrastructureException("Analysis error while parsing response", e, ErrorType.SPOTIFY_API_EXCEPTION);
+            return new InfrastructureException(
+                    "Failed to parse Spotify API response: potentially incompatible data format",
+                    e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
-        return new InfrastructureException("Unexpected error while communicating with Spotify API", e, ErrorType.SERVER_ERROR);
+        return new InfrastructureException(
+                "Unexpected error during Spotify API operation: ", e, ErrorType.SERVER_ERROR);
     }
 }

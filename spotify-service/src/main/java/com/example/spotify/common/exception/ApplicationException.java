@@ -13,7 +13,7 @@ public abstract class ApplicationException extends RuntimeException {
     }
     public ApplicationException(String message) {
         super(message);
-        this.type = ErrorType.GENERAL_EXCEPTION;
+        this.type = ErrorType.SERVER_ERROR;
     }
     public ErrorType getType() {
         return type;

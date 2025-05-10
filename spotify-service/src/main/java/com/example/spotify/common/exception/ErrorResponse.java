@@ -1,11 +1,13 @@
 package com.example.spotify.common.exception;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Map;
+
 
 public record ErrorResponse(
+        String code,
         String message,
-        String error,
-        int status,
-        String path,
-        Date timestamp
+        String traceId,
+        LocalDateTime timestamp,
+        Map<String, Object> details
 ) {}

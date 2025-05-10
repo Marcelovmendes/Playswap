@@ -1,6 +1,5 @@
 package com.example.spotify.common.infrastructure.adapter;
 
-import com.example.spotify.common.exception.ExternalServiceAdapter;
 import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import org.slf4j.Logger;

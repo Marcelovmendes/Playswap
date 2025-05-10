@@ -1,5 +1,6 @@
-package com.example.spotify.common.exception;
+package com.example.spotify.common.infrastructure.adapter;
 
+import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public abstract class ExternalServiceAdapter {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -26,7 +26,7 @@ public abstract class ExternalServiceAdapter {
         try {
             return operation.execute();
         } catch (Throwable exception) {
-            log.error("Error {}: {}", operationName, exception.getMessage());
+            log.error("ExecuteSyncError {}: {}", operationName, exception.getMessage());
             throw exceptionTranslator.translate(exception);
         }
     }
@@ -35,14 +35,14 @@ public abstract class ExternalServiceAdapter {
         return future
                 .orTimeout(15, TimeUnit.SECONDS)
                 .exceptionally(throwable -> {
-                    log.error("Error {}: {}", operation, throwable.getMessage());
+                    log.error("ExecuteAsyncError {}: {}", operation, throwable.getMessage());
                     throw exceptionTranslator.translate(throwable);
                 })
                 .join();
     }
     @FunctionalInterface
     public interface SpotifyOperation<T> {
-        T execute() throws IOException, SpotifyWebApiException, ParseException, org.apache.hc.core5.http.ParseException;
+        T execute() throws IOException, SpotifyWebApiException, ParseException;
     }
 
 
