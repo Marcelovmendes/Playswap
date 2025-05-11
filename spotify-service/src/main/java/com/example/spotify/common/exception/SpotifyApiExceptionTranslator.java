@@ -1,5 +1,6 @@
 package com.example.spotify.common.exception;
 
+import jakarta.ws.rs.NotFoundException;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import java.io.IOException;
@@ -13,9 +14,14 @@ public class SpotifyApiExceptionTranslator {
 
         if (e instanceof ApplicationException) return (ApplicationException) e;
 
+        if (e instanceof NotFoundException) {
+            return new SpotifyApiException(
+                    String.format("Spotify API operation failed: %s", e.getMessage()),
+                    e, ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
+        }
         if (e instanceof IOException) {
             return new InfrastructureException(
-                    "Network communication with Spotify API failed: connection issue or service unavailable",
+                  String.format("Network communication with Spotify API failed: %s", e.getMessage()),
                     e, ErrorType.API_UNAVAILABLE_EXCEPTION);
         }
         if (e instanceof SpotifyWebApiException) {
@@ -25,12 +31,12 @@ public class SpotifyApiExceptionTranslator {
                         e, ErrorType.AUTHENTICATION_EXCEPTION);
             }
             return new SpotifyApiException(
-                    "Spotify API returned error code: ",
+                    String.format("Spotify API operation failed: %s", e.getMessage()),
                     e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
         if (e instanceof ParseException) {
             return new InfrastructureException(
-                    "Failed to parse Spotify API response: potentially incompatible data format",
+                   String.format("Failed to parse Spotify API response: potentially incompatible data format: %s", e.getMessage()),
                     e, ErrorType.SPOTIFY_API_EXCEPTION);
         }
         return new InfrastructureException(

@@ -42,7 +42,7 @@ public abstract class ExternalServiceAdapter {
     }
     @FunctionalInterface
     public interface SpotifyOperation<T> {
-        T execute() throws IOException, SpotifyWebApiException, ParseException;
+        T execute() throws IOException, SpotifyWebApiException, org.apache.hc.core5.http.ParseException;
     }
 
 

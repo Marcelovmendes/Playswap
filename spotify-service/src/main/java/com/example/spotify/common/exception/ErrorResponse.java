@@ -7,7 +7,7 @@ import java.util.Map;
 public record ErrorResponse(
         String code,
         String message,
-        String traceId,
+        Integer status,
         LocalDateTime timestamp,
         Map<String, Object> details
 ) {}

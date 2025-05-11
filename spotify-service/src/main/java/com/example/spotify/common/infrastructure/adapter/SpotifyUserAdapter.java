@@ -37,8 +37,8 @@ public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserPr
     }
 
     @Override
-    public UserEntity getCurrentUsersProfileAsync(UserToken tokenAccess) {
-        spotifyApi.setAccessToken(tokenAccess.getAccessToken());
+    public UserEntity getCurrentUsersProfileAsync(String tokenAccess) {
+        spotifyApi.setAccessToken(tokenAccess);
         GetCurrentUsersProfileRequest request = spotifyApi.getCurrentUsersProfile().build();
 
         User user = executeAsync(

@@ -4,6 +4,6 @@ public class UserProfileException extends ApplicationException {
 
     public UserProfileException(String message, ErrorType type) { super(message, type);}
     public UserProfileException(String message) {
-       super(message, ErrorType.GENERAL_EXCEPTION);
+       super(message, ErrorType.SERVER_ERROR);
     }
 }

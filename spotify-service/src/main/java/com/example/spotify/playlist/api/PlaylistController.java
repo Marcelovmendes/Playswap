@@ -36,26 +36,21 @@ public class PlaylistController {
 
      @GetMapping("/")
     public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists(HttpSession session) {
-             log.info("playlist request ID: {}", session.getId());
-             String accessToken = (String) session.getAttribute("spotifyAccessToken");
-
         String token = authToken.getAccessToken();
-         if (accessToken == null) {
-             return ResponseEntity.status(401).build();
-         }
        Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync(token);
+
         return ResponseEntity.ok(playLists);
     }
 
-    @GetMapping("/tracks/")
+    @GetMapping("/tracks")
     public ResponseEntity<Track[]> getTracks (HttpSession session) {
          log.info("tracks request ID: {}", session.getId());
 
         String token = authToken.getAccessToken();
 
-        CompletableFuture<Track[]> tracks = playlistPort.getSeveralTracksAsync(token);
+    Track[] tracks = playlistPort.getSeveralTracksAsync(token);
 
-        return ResponseEntity.ok(tracks.join());
+        return ResponseEntity.ok(tracks);
 
     }
     @GetMapping("/{playlistId}/tracks")

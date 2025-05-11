@@ -4,6 +4,7 @@ import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.UserProfileException;
+import com.example.spotify.common.infrastructure.service.TokenProvider;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;
@@ -20,20 +21,25 @@ import java.util.concurrent.ExecutionException;
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final UserProfilePort spotifyUserAdapter;
+    private final UserProfilePort userProfilePort;
     private final UserRepository repository;
+    private final TokenProvider tokenProvider;
 
-    public UserServiceImpl(UserProfilePort spotifyUserAdapter, UserRepository repository) {
-        this.spotifyUserAdapter = spotifyUserAdapter;
+    public UserServiceImpl(UserProfilePort userProfilePort, UserRepository repository, TokenProvider tokenProvider) {
+        this.userProfilePort = userProfilePort;
         this.repository = repository;
+        this.tokenProvider = tokenProvider;
     }
 
-    @Override
-    public UserProfileDTO getCurrentUserProfileAsync(UserToken token)  {
-         if (token == null || token.getAccessToken() == null) throw new AuthenticationException("Invalid token provided",
-                  ErrorType.AUTHENTICATION_EXCEPTION);
 
-         UserEntity userData = spotifyUserAdapter.getCurrentUsersProfileAsync(token);
+    @Override
+    public UserProfileDTO getCurrentUserProfileAsync()  {
+        if(!tokenProvider.isTokenValid()){
+            logger.error("Token de acesso inválido");
+            throw new AuthenticationException("Token de acesso inválido", ErrorType.SERVER_ERROR);
+        }
+         String accessToken = tokenProvider.getAccessToken();
+         UserEntity userData = userProfilePort.getCurrentUsersProfileAsync(accessToken);
          Email email = userData.getEmail();
 
          if(email.isValid()) {

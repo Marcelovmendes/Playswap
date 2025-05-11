@@ -68,44 +68,17 @@ public class UserJdbcEntity {
 
     // Getters e setters
     public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
     public LocalDate getBirthdate() { return birthdate; }
-    public void setBirthdate(LocalDate birthdate) { this.birthdate = birthdate; }
-
     public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-
     public String getDisplayName() { return displayName; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
-
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
     public String getExternalUrls() { return externalUrls; }
-    public void setExternalUrls(String externalUrls) { this.externalUrls = externalUrls; }
-
     public int getFollowersCount() { return followersCount; }
-    public void setFollowersCount(int followersCount) { this.followersCount = followersCount; }
-
     public String getHref() { return href; }
-    public void setHref(String href) { this.href = href; }
-
     public String getPhotoCover() { return photoCover; }
-    public void setPhotoCover(String photoCover) { this.photoCover = photoCover; }
-
     public String getSpotifyUri() { return spotifyUri; }
-    public void setSpotifyUri(String spotifyUri) { this.spotifyUri = spotifyUri; }
-
     public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
     public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
     public String getUserRegisteredId() { return userRegisteredId; }
-    public void setUserRegisteredId(String userRegisteredId) { this.userRegisteredId = userRegisteredId; }
 }

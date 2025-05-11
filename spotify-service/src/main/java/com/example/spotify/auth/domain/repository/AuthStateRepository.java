@@ -1,11 +1,13 @@
 package com.example.spotify.auth.domain.repository;
 
+import com.example.spotify.auth.domain.entity.AuthState;
+
 import java.time.Duration;
 import java.util.Optional;
 
 public interface AuthStateRepository {
-    void save (String state, String codeVerifier, Duration timeout);
-    Optional <String> findCodeVerifier (String state);
-    boolean exists (String state);
-    void remove (String state);
+    void save (AuthState state, String codeVerifier, Duration timeout);
+    Optional <AuthState> findCodeVerifier (AuthState state);
+    boolean exists (AuthState state);
+    void remove (AuthState state);
 }

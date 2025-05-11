@@ -1,6 +1,7 @@
 package com.example.spotify.auth.api;
-import com.example.spotify.auth.application.AuthenticationService;
-import com.example.spotify.auth.application.impl.SpotifyAuthenticationService;
+import com.example.spotify.auth.application.AuthUseCase;
+import com.example.spotify.auth.application.TokenQuery;
+import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.auth.domain.service.TokenStoragePort;
 import com.example.spotify.auth.domain.service.UserToken;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.naming.AuthenticationException;
 import java.net.URI;
 
 @RestController
@@ -21,18 +21,21 @@ import java.net.URI;
 public class AuthenticationController {
 
     private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
-    private final AuthenticationService authService;
+    private final AuthUseCase authService;
     private final TokenStoragePort tokenStoragePort;
+    private final TokenQuery tokenQuery;
+    private final AuthUseCase authUseCase;
 
-    public AuthenticationController(AuthenticationService authService, TokenStoragePort tokenStoragePort) {
+    public AuthenticationController(AuthUseCase authService, TokenStoragePort tokenStoragePort, TokenQuery tokenQuery, AuthUseCase authUseCase) {
         this.authService = authService;
         this.tokenStoragePort = tokenStoragePort;
+        this.tokenQuery = tokenQuery;
+        this.authUseCase = authUseCase;
     }
 
     @GetMapping("/")
     public ResponseEntity<String> initiateAuthentication(){
-            URI response = authService.initiateAuthentication();
-
+            URI response = authUseCase.initiateAuthentication();
             return ResponseEntity.ok(response.toString());
     }
 
@@ -53,21 +56,13 @@ public class AuthenticationController {
 
         }
         try {
-            UserToken token = authService.handleAuthenticationCallback(code, state);
-            tokenStoragePort.storeUserToken(session, token);
+            Token token = authUseCase.completeAuthentication(code, state);
+            tokenQuery.storeUserToken(session.getId(), token);
 
             log.info("Autenticação concluída e enviada pra sessão com sucesso!");
-            return ResponseEntity.ok("""
-        <!DOCTYPE html>
-        <html>
-        <body>
-            <p>Autenticação concluída!</p>
-        </body>
-        </html>
-        """);
+            return ResponseEntity.ok("Autenticação concluída!");
         } catch (Exception e) {
-            new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return null;
     }
 }

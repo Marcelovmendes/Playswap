@@ -15,7 +15,7 @@ import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPla
 public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SpotifyPlaylistAdapter.class);
-    private static final String[] ids = new String[]{"2FDTHlrBguDzQkp7PVj16Q"};
+    private static final String[] ids = new String[]{"7sTyAjxDXq9afwfSQy6D0s"};
 
 
     public SpotifyPlaylistAdapter(SpotifyApi spotifyApi, SpotifyApiExceptionTranslator exceptionTranslator) {

@@ -1,7 +1,7 @@
 package com.example.spotify.common.infrastructure.service;
 
+import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.auth.domain.service.TokenStoragePort;
-import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.infrastructure.adapter.OAuth2TokenAdapter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -25,14 +25,18 @@ public class SessionTokenStorage implements TokenStoragePort {
     }
 
     @Override
-    public void storeUserToken(HttpSession session, UserToken token) {
+    public void storeUserToken(String sessionId, Token token) {
+        HttpSession session = request.getSession(true);
+        logger.info("Storing token in session: {}", sessionId);
+        logger.info("sessionId: {}", session.getId());
+
         session.setAttribute(TOKEN_KEY, token.getAccessToken());
         session.setAttribute(REFRESH_TOKEN_KEY, token.getRefreshToken());
         session.setAttribute(TOKEN_EXPIRY_KEY, token.getExpiresAt().toEpochMilli());
     }
 
     @Override
-    public UserToken retrieveUserToken() {
+    public Token retrieveUserToken() {
         HttpSession session = request.getSession(false);
         if (session == null) return null;
 

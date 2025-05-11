@@ -24,7 +24,7 @@ public final class UserEntity {
 
         this.id = Objects.requireNonNull(id, "ID não pode ser nulo");
         this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
-        this.birthdate = birthdate; // Opcional
+        this.birthdate = birthdate;
         this.country = country;
         this.displayName = displayName;
         this.externalUrls = externalUrls;
