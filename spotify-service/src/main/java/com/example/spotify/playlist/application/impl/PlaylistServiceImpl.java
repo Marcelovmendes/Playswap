@@ -1,6 +1,7 @@
 package com.example.spotify.playlist.application.impl;
 
 import com.example.spotify.playlist.application.PlaylistsService;
+import com.example.spotify.playlist.application.TokenProvider;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,16 +17,18 @@ public class PlaylistServiceImpl implements PlaylistsService {
 
     private static final Logger log = LoggerFactory.getLogger(PlaylistServiceImpl.class);
     private final PlaylistPort playlist;
+    private final TokenProvider tokenProvider;
 
-    public PlaylistServiceImpl(PlaylistPort playlist) {
+    public PlaylistServiceImpl(PlaylistPort playlist, TokenProvider tokenProvider) {
         this.playlist = playlist;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
-    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync(String accessToken) {
+    public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync() {
 
             Paging<PlaylistSimplified> playlistsData = playlist.
-                    getListOfCurrentUsersPlaylistsAsync(accessToken);
+                    getListOfCurrentUsersPlaylistsAsync(tokenProvider.getAccessToken());
             log.info("Playlists data: {}", playlistsData.getTotal());
 
             return playlistsData;

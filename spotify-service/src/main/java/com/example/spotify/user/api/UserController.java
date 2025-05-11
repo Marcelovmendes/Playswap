@@ -21,11 +21,9 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final TokenProvider tokenProvider;
 
-    public UserController(UserService userService, TokenProvider tokenProvider) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.tokenProvider = tokenProvider;
     }
 
     @GetMapping("/details")

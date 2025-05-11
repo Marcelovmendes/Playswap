@@ -7,6 +7,6 @@ import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import java.util.concurrent.CompletableFuture;
 
 public interface PlaylistsService {
-    Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync(String accessToken);
+    Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync();
     Paging<PlaylistTrack> getPlaylistTracksAsync(String accessToken, String playlistId);
 }

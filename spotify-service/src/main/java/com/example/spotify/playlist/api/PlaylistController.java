@@ -1,8 +1,8 @@
 package com.example.spotify.playlist.api;
 
+import com.example.spotify.common.infrastructure.service.TokenProvider;
 import com.example.spotify.playlist.application.PlaylistsService;
 import com.example.spotify.playlist.application.impl.AuthTokenProvider;
-import com.example.spotify.playlist.application.TokenProvider;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -24,20 +24,20 @@ import java.util.concurrent.CompletableFuture;
 public class PlaylistController {
 
     private static final Logger log = LoggerFactory.getLogger(PlaylistController.class);
-    private final TokenProvider authToken;
     private final PlaylistsService playlistsService;
     private final PlaylistPort playlistPort;
 
-    public PlaylistController(AuthTokenProvider authToken, PlaylistsService playlistsService, PlaylistPort playlistPort) {
-        this.authToken = authToken;
+    public PlaylistController(PlaylistsService playlistsService, PlaylistPort playlistPort) {
+
         this.playlistsService = playlistsService;
         this.playlistPort = playlistPort;
     }
 
      @GetMapping("/")
     public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists(HttpSession session) {
-        String token = authToken.getAccessToken();
-       Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync(token);
+
+       Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync();
+
 
         return ResponseEntity.ok(playLists);
     }
@@ -46,9 +46,7 @@ public class PlaylistController {
     public ResponseEntity<Track[]> getTracks (HttpSession session) {
          log.info("tracks request ID: {}", session.getId());
 
-        String token = authToken.getAccessToken();
-
-    Track[] tracks = playlistPort.getSeveralTracksAsync(token);
+    Track[] tracks = playlistPort.getSeveralTracksAsync("12233455");
 
         return ResponseEntity.ok(tracks);
 
@@ -57,9 +55,7 @@ public class PlaylistController {
     public ResponseEntity <Paging<PlaylistTrack>> getPlaylistTracks(@PathVariable String playlistId, HttpSession session) {
         log.info("playlist tracks request ID: {}", session.getId());
 
-        String token = authToken.getAccessToken();
-
-       Paging<PlaylistTrack>playlistTracks = playlistsService.getPlaylistTracksAsync(token, playlistId);
+       Paging<PlaylistTrack>playlistTracks = playlistsService.getPlaylistTracksAsync("1321312312", playlistId);
 
         return ResponseEntity.ok(playlistTracks);
     }
