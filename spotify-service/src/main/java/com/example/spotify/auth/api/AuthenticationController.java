@@ -21,15 +21,12 @@ import java.net.URI;
 public class AuthenticationController {
 
     private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
-    private final AuthUseCase authService;
-    private final TokenStoragePort tokenStoragePort;
     private final TokenQuery tokenQuery;
     private final AuthUseCase authUseCase;
 
-    public AuthenticationController(AuthUseCase authService, TokenStoragePort tokenStoragePort, TokenQuery tokenQuery, AuthUseCase authUseCase) {
-        this.authService = authService;
-        this.tokenStoragePort = tokenStoragePort;
+    public AuthenticationController(TokenQuery tokenQuery, AuthUseCase authUseCase) {
         this.tokenQuery = tokenQuery;
+
         this.authUseCase = authUseCase;
     }
 

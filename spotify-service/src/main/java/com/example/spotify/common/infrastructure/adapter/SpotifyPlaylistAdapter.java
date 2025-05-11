@@ -51,7 +51,13 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
     }
 
     @Override
-    public Track[] getSeveralTracksAsync(String accessToken) {
+    public Track[] getSeveralTracksAsync() {
+        return new Track[0];
+    }
+
+    /***
+    @Override
+    public Track[] getSeveralTracksAsync() {
        spotifyApi.setAccessToken(accessToken);
 
             return executeAsync(
@@ -63,7 +69,7 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
 
 
     }
-
+***/
     @Override
     public Paging<PlaylistTrack> getPlaylistTracksAsync(String accessToken, String playlistId) {
         spotifyApi.setAccessToken(accessToken);

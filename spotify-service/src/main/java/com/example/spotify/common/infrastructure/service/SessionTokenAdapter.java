@@ -4,9 +4,11 @@ import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.auth.domain.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class SessionTokenAdapter implements TokenRepository {
     private static final String ACCESS_TOKEN_KEY = "spotifyAccessToken";
     private static final String REFRESH_TOKEN_KEY = "spotifyRefreshToken";

@@ -48,9 +48,10 @@ public class TokenService implements TokenQuery {
     }
 
     @Override
-    public void isValidadeToken(String sessionId) {
+    public void isValidateToken(String sessionId) {
         tokenRepository.remove(sessionId);
     }
+
 
     @Override
     public Token refreshToken(String sessionId) {

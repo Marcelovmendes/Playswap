@@ -26,8 +26,8 @@ public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserPr
     }
 
     @Override
-    public User getCurrentUsersProfileSync(UserToken tokenAccess){
-        spotifyApi.setAccessToken(tokenAccess.getAccessToken());
+    public User getCurrentUsersProfileSync(String tokenAccess) {
+        spotifyApi.setAccessToken(tokenAccess);
         GetCurrentUsersProfileRequest request = spotifyApi.getCurrentUsersProfile().build();
 
             return  executeSync(request::execute,

@@ -4,7 +4,6 @@ package com.example.spotify.common.infrastructure.adapter;
 import com.example.spotify.auth.application.OAuthClient;
 import com.example.spotify.auth.domain.entity.AuthorizationResquest;
 import com.example.spotify.auth.domain.entity.Token;
-import com.example.spotify.auth.domain.service.AuthenticationPort;
 import com.example.spotify.common.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

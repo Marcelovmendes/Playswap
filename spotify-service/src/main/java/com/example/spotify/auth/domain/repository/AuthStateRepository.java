@@ -6,8 +6,8 @@ import java.time.Duration;
 import java.util.Optional;
 
 public interface AuthStateRepository {
-    void save (AuthState state, String codeVerifier, Duration timeout);
-    Optional <AuthState> findCodeVerifier (AuthState state);
-    boolean exists (AuthState state);
-    void remove (AuthState state);
+    void save(AuthState state, Duration timeout);
+    Optional<AuthState> findByStateValue(String stateValue);
+    boolean exists(String stateValue);
+    void remove(String stateValue);
 }
