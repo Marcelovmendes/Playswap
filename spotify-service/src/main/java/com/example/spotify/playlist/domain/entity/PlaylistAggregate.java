@@ -20,12 +20,12 @@ public class PlaylistAggregate {
         this.targetPlaylistForm = null;
     }
 
-    public static PlaylistAggregate create(PlaylistId id, String name, UserId ownerId, String description,
+    public static PlaylistAggregate create(PlaylistId id, String name, UserId ownerId, String ownerName, String description,
                                             boolean collaborative, boolean publicAccess, int trackCount, String imageUrl,
                                             List<Track> tracks, String externalUrl) {
 
-        Playlist playlist = new Playlist(id, name, ownerId, description, collaborative, publicAccess, trackCount,
-                imageUrl, tracks, externalUrl);
+        Playlist playlist = new Playlist(id, name, ownerId,ownerName, description, collaborative, publicAccess,
+                trackCount, imageUrl, tracks, externalUrl);
 
         return new PlaylistAggregate(playlist, tracks);
     }

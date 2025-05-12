@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
+public abstract class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SpotifyPlaylistAdapter.class);
     private static final String[] ids = new String[]{"7sTyAjxDXq9afwfSQy6D0s"};
@@ -63,26 +63,7 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
 
     }
 
-    @Override
-    public com.example.spotify.playlist.domain.entity.Track[] getSeveralTracksAsync() {
-        return new Track[0];
-    }
 
-    /***
-    @Override
-    public Track[] getSeveralTracksAsync() {
-       spotifyApi.setAccessToken(accessToken);
-
-            return executeAsync(
-                    spotifyApi.getSeveralTracks(ids)
-                            .build()
-                            .executeAsync(),
-                    "fetching tracks"
-            );
-
-
-    }
-***/
     @Override
     public List<Track> getPlaylistTracksAsync(String accessToken, String playlistId) {
         spotifyApi.setAccessToken(accessToken);
@@ -106,14 +87,14 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
                 new PlaylistId(spotifyPlaylist.getId()),
                 spotifyPlaylist.getName(),
                 UserId.fromString(spotifyPlaylist.getOwner().getId()),
+                spotifyPlaylist.getOwner().getDisplayName(),
                 "spotifyPlaylist",
                 spotifyPlaylist.getIsCollaborative(),
                 spotifyPlaylist.getIsPublicAccess(),
                 spotifyPlaylist.getTracks().getTotal(),
                 imageUrl,
                 List.of(),
-                spotifyPlaylist.getExternalUrls().get("spotify")
-        );
+                spotifyPlaylist.getExternalUrls().get("spotify"));
     }
     private List<Track> convertPlaylistTracks(Paging<PlaylistTrack> playlistTracks) {
         List<Track> tracks = new ArrayList<>();
@@ -170,14 +151,14 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
                 new PlaylistId(spotifyPlaylist.getId()),
                 spotifyPlaylist.getName(),
                 UserId.fromString(spotifyPlaylist.getOwner().getId()),
+                spotifyPlaylist.getOwner().getDisplayName(),
                 spotifyPlaylist.getDescription(),
                 spotifyPlaylist.getIsCollaborative(),
                 spotifyPlaylist.getIsPublicAccess(),
                 spotifyPlaylist.getTracks().getTotal(),
                 imageUrl,
                 tracks,
-                spotifyPlaylist.getExternalUrls().get("spotify")
-        );
+                spotifyPlaylist.getExternalUrls().get("spotify"));
     }
 
 

@@ -7,7 +7,6 @@ import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 

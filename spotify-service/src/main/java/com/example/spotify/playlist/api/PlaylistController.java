@@ -2,7 +2,7 @@ package com.example.spotify.playlist.api;
 
 import com.example.spotify.playlist.application.PlaylistsService;
 import com.example.spotify.playlist.domain.PlaylistPort;
-import jakarta.servlet.http.HttpSession;
+import com.example.spotify.playlist.domain.entity.Playlist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -31,8 +29,8 @@ public class PlaylistController {
     }
 
      @GetMapping("/")
-    public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists() {
-       Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync();
+    public ResponseEntity<List<Playlist>> getPlaylists() {
+       List<Playlist> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync();
 
         return ResponseEntity.ok(playLists);
     }
@@ -44,8 +42,8 @@ public class PlaylistController {
         return ResponseEntity.ok(tracks);
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity <Paging<PlaylistTrack>> getPlaylistTracks(@PathVariable String playlistId) {
-       Paging<PlaylistTrack>playlistTracks = playlistsService.getPlaylistTracksAsync(playlistId);
+    public ResponseEntity<List<com.example.spotify.playlist.domain.entity.Track>> getPlaylistTracks(@PathVariable String playlistId) {
+       List<com.example.spotify.playlist.domain.entity.Track> playlistTracks = playlistsService.getPlaylistTracksAsync(playlistId);
 
         return ResponseEntity.ok(playlistTracks);
     }
