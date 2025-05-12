@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public abstract class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
+public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements PlaylistPort {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(SpotifyPlaylistAdapter.class);
     private static final String[] ids = new String[]{"7sTyAjxDXq9afwfSQy6D0s"};
@@ -61,6 +61,11 @@ public abstract class SpotifyPlaylistAdapter extends ExternalServiceAdapter impl
         }
         return playlists;
 
+    }
+
+    @Override
+    public se.michaelthelin.spotify.model_objects.specification.Track[] getSeveralTracksAsync() {
+        return new se.michaelthelin.spotify.model_objects.specification.Track[0];
     }
 
 
