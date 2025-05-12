@@ -38,20 +38,13 @@ public class PlaylistController {
     }
 
     @GetMapping("/tracks")
-    public ResponseEntity<Track[]> getTracks (HttpSession session) {
-         log.info("tracks request ID: {}", session.getId());
-
-
-
+    public ResponseEntity<Track[]> getTracks () {
         Track[] tracks = playlistPort.getSeveralTracksAsync();
 
         return ResponseEntity.ok(tracks);
-
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity <Paging<PlaylistTrack>> getPlaylistTracks(@PathVariable String playlistId, HttpSession session) {
-        log.info("playlist tracks request ID: {}", session.getId());
-
+    public ResponseEntity <Paging<PlaylistTrack>> getPlaylistTracks(@PathVariable String playlistId) {
        Paging<PlaylistTrack>playlistTracks = playlistsService.getPlaylistTracksAsync(playlistId);
 
         return ResponseEntity.ok(playlistTracks);
