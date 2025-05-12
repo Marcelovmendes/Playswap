@@ -14,7 +14,7 @@ public class Playlist {
     private final String description;
     private final boolean collaborative;
     private final boolean publicAccess;
-    private final int trackCount;
+    private final int trackCount;   
     private final String imageUrl;
     private final List<Track> tracks;
     private final String externalUrl;
