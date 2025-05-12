@@ -26,9 +26,9 @@ public class PlaylistServiceImpl implements PlaylistsService {
 
     @Override
     public Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsAsync() {
-
+           String accessToken = tokenProvider.getAccessToken();
             Paging<PlaylistSimplified> playlistsData = playlist.
-                    getListOfCurrentUsersPlaylistsAsync(tokenProvider.getAccessToken());
+                    getListOfCurrentUsersPlaylistsAsync(accessToken);
             log.info("Playlists data: {}", playlistsData.getTotal());
 
             return playlistsData;

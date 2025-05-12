@@ -3,7 +3,7 @@ package com.example.spotify.auth.application.impl;
 import com.example.spotify.auth.application.AuthUseCase;
 import com.example.spotify.auth.application.OAuthClient;
 import com.example.spotify.auth.domain.entity.AuthState;
-import com.example.spotify.auth.domain.entity.AuthorizationResquest;
+import com.example.spotify.auth.domain.entity.authorizationRequest;
 import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.auth.domain.repository.AuthStateRepository;
 import com.example.spotify.auth.domain.service.PkceGenerator;
@@ -49,7 +49,7 @@ public class SpotifyAuthenticationService implements AuthUseCase {
             AuthState state = AuthState.create(stateValue, codeVerifier);
             authStateRepository.save(state, STATE_TIMEOUT);
 
-            AuthorizationResquest request = AuthorizationResquest.create(
+            authorizationRequest request = authorizationRequest.create(
                     codeChallenge, stateValue, Collections.singleton(SCOPES)
             );
 

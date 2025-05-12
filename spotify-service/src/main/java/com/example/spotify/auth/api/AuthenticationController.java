@@ -24,7 +24,6 @@ public class AuthenticationController {
 
     public AuthenticationController(TokenQuery tokenQuery, AuthUseCase authUseCase) {
         this.tokenQuery = tokenQuery;
-
         this.authUseCase = authUseCase;
     }
 

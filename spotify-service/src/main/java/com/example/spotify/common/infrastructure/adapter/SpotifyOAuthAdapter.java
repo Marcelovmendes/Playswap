@@ -2,7 +2,7 @@ package com.example.spotify.common.infrastructure.adapter;
 
 
 import com.example.spotify.auth.application.OAuthClient;
-import com.example.spotify.auth.domain.entity.AuthorizationResquest;
+import com.example.spotify.auth.domain.entity.authorizationRequest;
 import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.common.exception.*;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class SpotifyOAuthAdapter extends ExternalServiceAdapter implements OAuth
     }
 
     @Override
-    public URI createAuthorizationUri(AuthorizationResquest authorizationRequestRequest) {
+    public URI createAuthorizationUri(authorizationRequest authorizationRequestRequest) {
                  AuthorizationCodeUriRequest request = spotifyApi.authorizationCodePKCEUri(authorizationRequestRequest.getCodeChallenge())
                          .state(authorizationRequestRequest.getState())
                          .scope(authorizationRequestRequest.getScopesAsString())

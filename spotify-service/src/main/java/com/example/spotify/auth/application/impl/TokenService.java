@@ -46,7 +46,13 @@ public class TokenService implements TokenQuery {
 
     @Override
     public void storeUserToken(String sessionId, Token token) {
-        tokenRepository.save(sessionId, token);
+try {
+    tokenRepository.save(sessionId, token);
+} catch (Exception e) {
+    log.error("Error storing token for session ID: {}", sessionId, e);
+    throw new ApplicationException("Failed to store token", ErrorType.SERVER_ERROR) {
+    };
+}
     }
 
     @Override

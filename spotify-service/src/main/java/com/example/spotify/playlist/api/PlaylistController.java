@@ -31,7 +31,7 @@ public class PlaylistController {
     }
 
      @GetMapping("/")
-    public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists(HttpSession session) {
+    public ResponseEntity<Paging<PlaylistSimplified>> getPlaylists() {
        Paging<PlaylistSimplified> playLists = playlistsService.getListOfCurrentUsersPlaylistsAsync();
 
         return ResponseEntity.ok(playLists);
