@@ -1,7 +1,5 @@
 package com.example.spotify.auth.domain.entity;
 
-import com.example.spotify.auth.domain.service.UserToken;
-
 import java.time.Instant;
 
 public class Token {

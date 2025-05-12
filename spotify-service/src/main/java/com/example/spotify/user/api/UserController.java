@@ -1,7 +1,5 @@
 package com.example.spotify.user.api;
 
-import com.example.spotify.auth.domain.entity.Token;
-import com.example.spotify.auth.domain.service.TokenStoragePort;
 import com.example.spotify.common.infrastructure.service.TokenProvider;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.application.UserService;

@@ -1,6 +1,5 @@
 package com.example.spotify.user.application.impl;
 
-import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.UserProfileException;
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
          UserEntity userData = userProfilePort.getCurrentUsersProfileAsync(accessToken);
          Email email = userData.getEmail();
 
-         if(email.isValid()) {
+         if(!email.isValid()) {
              throw new UserProfileException("Email not found in Spotify user data",
                      ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
          }

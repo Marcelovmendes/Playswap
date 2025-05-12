@@ -9,9 +9,11 @@ import com.example.spotify.common.exception.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class TokenService implements TokenQuery {
 
     private static final Logger log = LoggerFactory.getLogger(TokenService.class);

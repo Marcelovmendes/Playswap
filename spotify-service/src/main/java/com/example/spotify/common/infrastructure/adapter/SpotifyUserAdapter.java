@@ -1,6 +1,5 @@
 package com.example.spotify.common.infrastructure.adapter;
 
-import com.example.spotify.auth.domain.service.UserToken;
 import com.example.spotify.common.exception.*;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.domain.entity.Email;

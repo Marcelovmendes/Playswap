@@ -2,8 +2,6 @@ package com.example.spotify.auth.api;
 import com.example.spotify.auth.application.AuthUseCase;
 import com.example.spotify.auth.application.TokenQuery;
 import com.example.spotify.auth.domain.entity.Token;
-import com.example.spotify.auth.domain.service.TokenStoragePort;
-import com.example.spotify.auth.domain.service.UserToken;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
