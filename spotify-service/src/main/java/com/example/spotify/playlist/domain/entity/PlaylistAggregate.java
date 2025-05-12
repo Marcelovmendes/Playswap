@@ -19,7 +19,8 @@ public class PlaylistAggregate {
         this.conversionRequested = false;
         this.targetPlaylistForm = null;
     }
-    public static PlaylistAggregate create (PlaylistId id, String name, UserId ownerId, String description,
+
+    public static PlaylistAggregate create(PlaylistId id, String name, UserId ownerId, String description,
                                             boolean collaborative, boolean publicAccess, int trackCount, String imageUrl,
                                             List<Track> tracks, String externalUrl) {
 
@@ -38,4 +39,14 @@ public class PlaylistAggregate {
             tracks.add(track);
         }
     }
+
+    public boolean isEmpty() { return tracks.isEmpty(); }
+    public Playlist getPlaylist() { return playlist; }
+    public List<Track> getTracks() { return List.copyOf(tracks);}
+    public PlaylistId getId() { return playlist.getId(); }
+    public String getName() { return playlist.getName(); }
+    public UserId getOwnerId() { return playlist.getOwnerId(); }
+    public Integer getTrackCount() { return playlist.getTrackCount(); }
+
+    //conversion aqui?
 }
