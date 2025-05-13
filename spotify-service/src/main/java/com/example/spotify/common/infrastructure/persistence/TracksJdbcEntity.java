@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.sql.In;
 
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class TracksJdbcEntity {
     private String album;
 
     @Column("duration_ms")
-    private String durationMs;
+    private Integer durationMs;
 
     @Column("external_url")
     private String externalUrl;
@@ -44,7 +45,7 @@ public class TracksJdbcEntity {
     @Deprecated
     protected TracksJdbcEntity() {}
 
-    public TracksJdbcEntity(UUID id, String name, String artist, String album, String durationMs,
+    public TracksJdbcEntity(UUID id, String name, String artist, String album, Integer durationMs,
                              String externalUrl, String previewUrl, String imageUrl, String platform,
                              String createdAt, String updatedAt) {
         this.id = id;
@@ -63,7 +64,7 @@ public class TracksJdbcEntity {
     public String getName() { return name; }
     public String getArtist() { return artist; }
     public String getAlbum() { return album; }
-    public String getDurationMs() { return durationMs; }
+    public Integer getDurationMs() { return durationMs; }
     public String getExternalUrl() { return externalUrl; }
     public String getPreviewUrl() { return previewUrl; }
     public String getImageUrl() { return imageUrl; }

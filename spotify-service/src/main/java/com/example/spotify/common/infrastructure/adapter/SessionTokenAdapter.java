@@ -1,4 +1,4 @@
-package com.example.spotify.common.infrastructure.service;
+package com.example.spotify.common.infrastructure.adapter;
 
 import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.auth.domain.repository.TokenRepository;
