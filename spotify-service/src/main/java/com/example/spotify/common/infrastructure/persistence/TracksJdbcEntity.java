@@ -7,11 +7,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table(name="tracks", schema = "spotify")
 public class TracksJdbcEntity {
 
     @Id
-    private String id;
+    private UUID id;
     private String name;
     private String artist;
     private String album;
@@ -42,7 +44,7 @@ public class TracksJdbcEntity {
     @Deprecated
     protected TracksJdbcEntity() {}
 
-    public TracksJdbcEntity(String id, String name, String artist, String album, String durationMs,
+    public TracksJdbcEntity(UUID id, String name, String artist, String album, String durationMs,
                              String externalUrl, String previewUrl, String imageUrl, String platform,
                              String createdAt, String updatedAt) {
         this.id = id;
@@ -57,7 +59,7 @@ public class TracksJdbcEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public String getName() { return name; }
     public String getArtist() { return artist; }
     public String getAlbum() { return album; }

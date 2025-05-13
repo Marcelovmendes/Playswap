@@ -15,13 +15,15 @@ public interface UserJdbcRepository extends CrudRepository<UserJdbcEntity, UUID>
     Optional<UserJdbcEntity> findByEmail(@Param("email") String email);
 
 
-    @Query("INSERT INTO spotify.users (id, birth_date, country, display_name, email, external_urls, followers_count, hrf," +
-            " photo_cover, spotify_uri, type, registered_user_id, created_at, updated_at)" +
-            " VALUES" +
-            " (:#{#user.id}, :#{#user.birthdate}, :#{#user.country}, :#{#user.displayName}, :#{#user.email}," +
-            " :#{#user.externalUrls}, :#{#user.followersCount}, :#{#user.href}, :#{#user.photoCover}," +
-            " :#{#user.spotifyUri}, :#{#user.type}, :#{#user.userRegisteredId}," +
-            " CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *")
+    @Query(""" 
+            INSERT INTO spotify.users (id, birth_date, country, display_name, email, external_urls, followers_count, hrf,
+            photo_cover, spotify_uri, type, registered_user_id, created_at, updated_at)
+             VALUES
+            (:#{#user.id}, :#{#user.birthdate}, :#{#user.country}, :#{#user.displayName}, :#{#user.email},
+            :#{#user.externalUrls}, :#{#user.followersCount}, :#{#user.href}, :#{#user.photoCover},
+            :#{#user.spotifyUri}, :#{#user.type}, :#{#user.userRegisteredId},
+             CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *
+""")
     UserJdbcEntity save(@Param("user") UserJdbcEntity user);
 }
 
