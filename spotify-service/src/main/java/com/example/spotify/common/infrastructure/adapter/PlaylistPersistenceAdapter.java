@@ -66,7 +66,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
                 .map(this::mapToTrack)
                 .toList();
         Playlist playlist = new Playlist(
-                new PlaylistId(entity.getId()),
+                new PlaylistId(entity.getId().toString()),
                 entity.getName(),
                 new UserId(entity.getOwnerId()),
                 entity.getDescription(),

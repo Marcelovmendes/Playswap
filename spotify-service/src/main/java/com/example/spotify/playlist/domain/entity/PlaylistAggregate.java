@@ -10,14 +10,12 @@ public class PlaylistAggregate {
 
     private final Playlist playlist;
     private final List<Track> tracks;
-    private boolean conversionRequested;
-    private String targetPlaylistForm;
 
     public PlaylistAggregate(Playlist playlist, List<Track> tracks) {
         this.playlist = Objects.requireNonNull(playlist, "Playlist cannot be null");
         this.tracks = new ArrayList<>(tracks != null ? tracks : List.of());
-        this.conversionRequested = false;
-        this.targetPlaylistForm = null;
+        boolean conversionRequested = false;
+        String targetPlaylistForm = null;
     }
 
     public static PlaylistAggregate create(PlaylistId id, String name, UserId ownerId, String ownerName, String description,

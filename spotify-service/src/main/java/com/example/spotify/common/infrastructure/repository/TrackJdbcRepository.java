@@ -17,12 +17,12 @@ public interface TrackJdbcRepository extends CrudRepository<TracksJdbcEntity, UU
     List<TracksJdbcEntity> findByPlatform(@Param("platform") String platform);
 
     @Query("""
-           SELECT t.* FROM spotify.tracks t \s
+           SELECT t.* FROM spotify.tracks t\s
            JOIN spotify.playlist_tracks pt ON t.id = pt.track_id
            WHERE pt.playlist_id = :playlistId
            ORDER BY pt.position
-          """)
-    List<TracksJdbcEntity> findByPlaylistId(@Param("playlistId") String playlistId);
+         \s""")
+    List<TracksJdbcEntity> findByPlaylistId(@Param("playlistId") UUID playlistId);
 
 
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PlayListJdbcEntity {
     @Id
     @Column("id")
-    private String id;
+    private UUID id;
 
     @Column("name")
     private String name;
@@ -58,9 +58,9 @@ public class PlayListJdbcEntity {
     private LocalDateTime updatedAt;
 
     @Deprecated
-    public PlayListJdbcEntity() {}
+    private PlayListJdbcEntity() {}
 
-    public PlayListJdbcEntity(String id, String name, UUID ownerId, String description, boolean collaborative,
+    public PlayListJdbcEntity(UUID id, String name, UUID ownerId, String description, boolean collaborative,
                                boolean publicAccess, int trackCount, String imageUrl, String externalUrl,
                                String platform, boolean conversionRequested, String targetPlatform,
                                LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -80,7 +80,7 @@ public class PlayListJdbcEntity {
         this.updatedAt = updatedAt;
     }
 
-    public String getId() { return id; }
+    public UUID getId() { return id; }
     public String getName() { return name; }
     public UUID getOwnerId() { return ownerId; }
     public String getDescription() { return description; }
