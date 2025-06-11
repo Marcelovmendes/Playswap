@@ -66,9 +66,9 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
                 .map(this::mapToTrack)
                 .toList();
         Playlist playlist = new Playlist(
-                new PlaylistId(entity.getId().toString()),
+                PlaylistId.fromInternalId(entity.getId()),
                 entity.getName(),
-                new UserId(entity.getOwnerId()),
+               UserId.fromInternalId(entity.getOwnerId()),
                 entity.getDescription(),
                 entity.getDescription(),
                 entity.isCollaborative(),
@@ -82,7 +82,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
     }
     private Track mapToTrack(TracksJdbcEntity entity) {
         return new Track(
-                new TrackId(entity.getId().toString()),
+               TrackId.fromInternalId(entity.getId()),
                 entity.getName(),
                 entity.getArtist(),
                 entity.getAlbum(),
@@ -96,9 +96,9 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
         Playlist playlist = aggregate.getPlaylist();
 
         PlayListJdbcEntity entity = new PlayListJdbcEntity(
-                playlist.getId().value(),
+                playlist.getId().getInternalId(),
                 playlist.getName(),
-                playlist.getOwnerId().value(),
+                playlist.getOwnerId().getInternalId(),
                 playlist.getDescription(),
                 playlist.isCollaborative(),
                 playlist.isPublicAccess(),

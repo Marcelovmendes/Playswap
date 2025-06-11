@@ -1,23 +1,35 @@
 package com.example.spotify.user.domain.entity;
 
+import reactor.util.annotation.NonNull;
+
 import java.util.UUID;
 
-public record UserId(UUID value) {
+public record UserId(String value, UUID internalId) {
 
-    public static UserId generate() {
-        return new UserId(UUID.randomUUID());
-    }
-
-    public static UserId fromString(String id) {
-        try {
-            return new UserId(UUID.fromString(id));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("ID de usuário inválido", e);
+    public static UserId fromSpotifyId(String spotifyId) {
+        if (spotifyId == null || spotifyId.isBlank()) {
+            throw new IllegalArgumentException("Spotify User ID cannot be blank");
         }
+        UUID internalId = UUID.nameUUIDFromBytes(("spotify:" + spotifyId).getBytes());
+        return new UserId(spotifyId, internalId);
     }
 
-    @Override
-    public String toString() {
-        return value.toString();
+    public static UserId fromInternalId(UUID internalId) {
+        if (internalId == null) {
+            throw new IllegalArgumentException("Internal ID cannot be null");
+        }
+        return new UserId(internalId.toString(), internalId);
+    }
+
+    public static UserId reconstitute(String spotifyId, UUID internalId) {
+        return new UserId(spotifyId, internalId);
+    }
+
+    public String spotifyId() {
+        return value;
+    }
+
+    public UUID getInternalId() {
+        return internalId;
     }
 }

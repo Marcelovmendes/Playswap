@@ -36,7 +36,7 @@ public class UserPersistenceAdapter implements UserRepository {
     }
     private UserEntity adaptToDomainEntity(UserJdbcEntity userJdbcEntity){
         return new UserEntity(
-                new UserId(userJdbcEntity.getId()),
+                UserId.fromInternalId(userJdbcEntity.getId()),
                 userJdbcEntity.getBirthdate(),
                 userJdbcEntity.getCountry(),
                 userJdbcEntity.getDisplayName(),
@@ -56,7 +56,7 @@ public class UserPersistenceAdapter implements UserRepository {
     private UserJdbcEntity adaptToJdbcEntity(UserEntity user){
 
         return new UserJdbcEntity(
-                user.getId().value(),
+                user.getId().getInternalId(),
                 user.getBirthdate(),
                 user.getCountry(),
                 user.getDisplayName(),

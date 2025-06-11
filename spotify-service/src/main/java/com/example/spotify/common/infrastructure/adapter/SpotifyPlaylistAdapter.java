@@ -89,9 +89,9 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         }
 
         return new Playlist(
-                new PlaylistId(spotifyPlaylist.getId()),
+                PlaylistId.fromSpotifyId(spotifyPlaylist.getId()),
                 spotifyPlaylist.getName(),
-                UserId.fromString(spotifyPlaylist.getOwner().getId()),
+                UserId.fromSpotifyId(spotifyPlaylist.getOwner().getId()),
                 spotifyPlaylist.getOwner().getDisplayName(),
                 "spotifyPlaylist",
                 spotifyPlaylist.getIsCollaborative(),
@@ -127,7 +127,7 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         String album = spotifyTrack.getAlbum() != null ? spotifyTrack.getAlbum().getName() : "";
 
         return new Track(
-                new TrackId(spotifyTrack.getId()),
+                TrackId.fromSpotifyId(spotifyTrack.getId()),
                 spotifyTrack.getName(),
                 artist,
                 album,
@@ -153,9 +153,9 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         }
 
         return new Playlist(
-                new PlaylistId(spotifyPlaylist.getId()),
+                PlaylistId.fromSpotifyId(spotifyPlaylist.getId()),
                 spotifyPlaylist.getName(),
-                UserId.fromString(spotifyPlaylist.getOwner().getId()),
+                UserId.fromSpotifyId(spotifyPlaylist.getOwner().getId()),
                 spotifyPlaylist.getOwner().getDisplayName(),
                 spotifyPlaylist.getDescription(),
                 spotifyPlaylist.getIsCollaborative(),

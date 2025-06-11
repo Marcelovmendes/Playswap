@@ -14,6 +14,7 @@ import se.michaelthelin.spotify.model_objects.specification.User;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Component
 public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserProfilePort {
@@ -65,7 +66,7 @@ public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserPr
         }
 
         return new UserEntity(
-                UserId.generate(),
+                UserId.fromInternalId(UUID.fromString(spotifyUser.getId())),
                 birthdate,
                 spotifyUser.getCountry() != null ? spotifyUser.getCountry().getAlpha3() : null,
                 spotifyUser.getDisplayName(),

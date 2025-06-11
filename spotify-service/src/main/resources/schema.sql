@@ -7,6 +7,7 @@ SET search_path TO spotify;
 CREATE TABLE IF NOT EXISTS spotify.users
 (
     id                 uuid PRIMARY KEY,
+    spotify_id        VARCHAR(255) NOT NULL UNIQUE,
     birth_date         DATE         NULL,
     country            VARCHAR(10),
     display_name       VARCHAR(255),
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS spotify.users
 CREATE TABLE IF NOT EXISTS spotify.playlists
 (
     id            uuid PRIMARY KEY,
+    spotify_id    VARCHAR(255) NOT NULL UNIQUE,
     name          VARCHAR(255) NOT NULL,
     owner_id      uuid NOT NULL REFERENCES spotify.users(id),
     description   VARCHAR(255),
