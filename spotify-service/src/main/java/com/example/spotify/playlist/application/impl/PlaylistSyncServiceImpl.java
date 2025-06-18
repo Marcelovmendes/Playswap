@@ -25,6 +25,7 @@ public class PlaylistSyncServiceImpl implements PlaylistsService {
     private final PlaylistRepository playlistRepository;
     private final TrackJdbcRepository trackJdbcRepository;
 
+
     public PlaylistSyncServiceImpl(PlaylistPort playlist, TokenProvider tokenProvider, PlaylistRepository playlistRepository, TrackJdbcRepository trackJdbcRepository) {
         this.playlistPort = playlist;
         this.tokenProvider = tokenProvider;
@@ -61,7 +62,7 @@ public class PlaylistSyncServiceImpl implements PlaylistsService {
     }
 
     @Override
-    public List<Track> getPlaylistTracksAsync( String playlistId) {
+    public void getPlaylistTracksAsync( String playlistId) {
 
         PlaylistAggregate aggregate = playlistRepository.findById(playlistId);
         if (aggregate == null) {
@@ -70,7 +71,16 @@ public class PlaylistSyncServiceImpl implements PlaylistsService {
         String accessToken = tokenProvider.getAccessToken();
         List<Track> spotifyTracks = playlistPort.getPlaylistTracksAsync(playlistId, accessToken);
 
-    }
+        List<TracksJdbcEntity> fromEntity = playlistRepository.saveAllTracks(spotifyTracks);
+        trackJdbcRepository.saveAll(fromEntity);
+
+        for (Track track : spotifyTracks) {
+            aggregate.addTrack(track);
+        }
+        playlistRepository.save(aggregate);
+        log.info("Synced {} tracks for playlist {}",fromEntity, playlistId);
+
+    };
 
 
 }

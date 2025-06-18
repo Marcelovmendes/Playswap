@@ -5,6 +5,7 @@ import com.example.spotify.playlist.domain.PlaylistPort;
 import com.example.spotify.playlist.domain.entity.Playlist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,9 +43,8 @@ public class PlaylistController {
         return ResponseEntity.ok(tracks);
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity<List<com.example.spotify.playlist.domain.entity.Track>> getPlaylistTracks(@PathVariable String playlistId) {
-       List<com.example.spotify.playlist.domain.entity.Track> playlistTracks = playlistsService.getPlaylistTracksAsync(playlistId);
-
-        return ResponseEntity.ok(playlistTracks);
+    public ResponseEntity<HttpStatus> getPlaylistTracks(@PathVariable String playlistId) {
+     playlistsService.getPlaylistTracksAsync(playlistId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -8,5 +8,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PlaylistsService {
     List<Playlist> getListOfCurrentUsersPlaylistsAsync();
-    List<Track> getPlaylistTracksAsync(String playlistId);
+    void getPlaylistTracksAsync(String playlistId);
 }
