@@ -1,22 +1,20 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.playlist.infrastructure.adapter;
 
 
-import com.example.spotify.common.infrastructure.persistence.PlayListJdbcEntity;
-import com.example.spotify.common.infrastructure.persistence.TracksJdbcEntity;
-import com.example.spotify.common.infrastructure.repository.PlaylistJdbcRepository;
-import com.example.spotify.common.infrastructure.repository.PlaylistTrackJdbcRepository;
-import com.example.spotify.common.infrastructure.repository.TrackJdbcRepository;
+import com.example.spotify.playlist.infrastructure.repository.PlaylistJdbcRepository;
+import com.example.spotify.playlist.infrastructure.repository.PlaylistTrackJdbcRepository;
+import com.example.spotify.playlist.infrastructure.repository.TrackJdbcRepository;
 import com.example.spotify.playlist.domain.entity.*;
 import com.example.spotify.playlist.domain.repository.PlaylistRepository;
+import com.example.spotify.playlist.infrastructure.persistence.PlayListJdbcEntity;
+import com.example.spotify.playlist.infrastructure.persistence.TracksJdbcEntity;
 import com.example.spotify.user.domain.entity.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class PlaylistPersistenceAdapter implements PlaylistRepository {
@@ -36,7 +34,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
 
 
     @Override
-    public PlaylistAggregate findById(PlaylistId id) {
+    public PlaylistAggregate findById(String id) {
         return null;
     }
 
@@ -48,6 +46,28 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
     @Override
     public PlaylistAggregate save(PlaylistAggregate playlist) {
         return null;
+    }
+
+    @Override
+    public List<TracksJdbcEntity> saveAllTracks(List<Track> playlist) {
+        List<TracksJdbcEntity> trackEntities = playlist.stream()
+                .map(track -> new TracksJdbcEntity(
+                        track.getId().internalId(),
+                        track.getName(),
+                        track.getArtist(),
+                        track.getAlbum(),
+                        track.getDurationMs(),
+                        track.getExternalUrl(),
+                        track.getPreviewUrl(),
+                        track.getImageUrl(),
+                        "Spotify",
+                        null,
+                        null
+                )).toList();
+
+        return (List<TracksJdbcEntity>) trackJdbcRepository.saveAll(trackEntities);
+
+
     }
 
     @Override
@@ -95,7 +115,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
     private PlayListJdbcEntity mapToPlaylistEntity(PlaylistAggregate aggregate) {
         Playlist playlist = aggregate.getPlaylist();
 
-        PlayListJdbcEntity entity = new PlayListJdbcEntity(
+        return new PlayListJdbcEntity(
                 playlist.getId().getInternalId(),
                 playlist.getName(),
                 playlist.getOwnerId().getInternalId(),
@@ -111,9 +131,9 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-
-        return entity;
     }
+
+
 
 
 }

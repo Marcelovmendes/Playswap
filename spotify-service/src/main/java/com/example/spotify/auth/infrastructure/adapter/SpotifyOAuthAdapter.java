@@ -1,10 +1,11 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.auth.infrastructure.adapter;
 
 
 import com.example.spotify.auth.application.OAuthClient;
 import com.example.spotify.auth.domain.entity.authorizationRequest;
 import com.example.spotify.auth.domain.entity.Token;
 import com.example.spotify.common.exception.*;
+import com.example.spotify.common.infrastructure.adapter.ExternalServiceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

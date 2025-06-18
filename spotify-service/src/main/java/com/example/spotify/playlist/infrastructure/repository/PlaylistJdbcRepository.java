@@ -1,6 +1,6 @@
-package com.example.spotify.common.infrastructure.repository;
+package com.example.spotify.playlist.infrastructure.repository;
 
-import com.example.spotify.common.infrastructure.persistence.PlayListJdbcEntity;
+import com.example.spotify.playlist.infrastructure.persistence.PlayListJdbcEntity;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;

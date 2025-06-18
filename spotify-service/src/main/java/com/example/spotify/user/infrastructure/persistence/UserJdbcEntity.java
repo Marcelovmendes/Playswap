@@ -1,4 +1,4 @@
-package com.example.spotify.common.infrastructure.persistence;
+package com.example.spotify.user.infrastructure.persistence;
 
 import jakarta.annotation.Nullable;
 import org.springframework.data.annotation.CreatedDate;

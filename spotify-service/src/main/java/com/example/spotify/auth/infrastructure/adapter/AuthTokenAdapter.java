@@ -1,8 +1,8 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.auth.infrastructure.adapter;
 
 import com.example.spotify.auth.application.TokenQuery;
 import com.example.spotify.auth.domain.entity.Token;
-import com.example.spotify.common.infrastructure.service.TokenProvider;
+import com.example.spotify.auth.infrastructure.TokenProvider;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,7 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.playlist.infrastructure.adapter;
 
 import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
+import com.example.spotify.common.infrastructure.adapter.ExternalServiceAdapter;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import com.example.spotify.playlist.domain.entity.Playlist;
 import com.example.spotify.playlist.domain.entity.PlaylistId;

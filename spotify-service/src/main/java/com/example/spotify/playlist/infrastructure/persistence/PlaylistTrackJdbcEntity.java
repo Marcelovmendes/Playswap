@@ -1,4 +1,4 @@
-package com.example.spotify.common.infrastructure.persistence;
+package com.example.spotify.playlist.infrastructure.persistence;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;

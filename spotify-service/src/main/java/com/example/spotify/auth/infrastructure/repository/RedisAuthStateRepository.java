@@ -1,4 +1,4 @@
-package com.example.spotify.common.infrastructure.repository;
+package com.example.spotify.auth.infrastructure.repository;
 
 import com.example.spotify.auth.domain.entity.AuthState;
 import com.example.spotify.auth.domain.repository.AuthStateRepository;

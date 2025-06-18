@@ -1,6 +1,6 @@
 package com.example.spotify.user.api;
 
-import com.example.spotify.common.infrastructure.service.TokenProvider;
+import com.example.spotify.auth.infrastructure.TokenProvider;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.application.UserService;
 import jakarta.servlet.http.HttpSession;

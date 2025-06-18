@@ -1,13 +1,14 @@
-package com.example.spotify.common.infrastructure.persistence;
+package com.example.spotify.playlist.infrastructure.persistence;
 
 
+import com.example.spotify.playlist.domain.entity.Track;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.relational.core.sql.In;
 
+import java.util.List;
 import java.util.UUID;
 
 @Table(name="tracks", schema = "spotify")
@@ -60,6 +61,29 @@ public class TracksJdbcEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+    public static TracksJdbcEntity fromDomain(Track track) {
+        return new TracksJdbcEntity(
+                track.getId().internalId(),
+                track.getName(),
+                track.getArtist(),
+                track.getAlbum(),
+                track.getDurationMs(),
+                track.getExternalUrl(),
+                track.getPreviewUrl(),
+                track.getImageUrl(),
+                "spotify",
+                null,
+                null
+
+        );
+    }
+    public static List<TracksJdbcEntity> fromDomainList(List<Track> tracks) {
+        return tracks.stream()
+                .map(TracksJdbcEntity::fromDomain)
+                .toList();
+    }
+
+
     public UUID getId() { return id; }
     public String getName() { return name; }
     public String getArtist() { return artist; }

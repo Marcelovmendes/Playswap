@@ -1,7 +1,7 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.user.infrastructure.adapter;
 
-import com.example.spotify.common.infrastructure.persistence.UserJdbcEntity;
-import com.example.spotify.common.infrastructure.repository.UserJdbcRepository;
+import com.example.spotify.user.infrastructure.persistence.UserJdbcEntity;
+import com.example.spotify.user.infrastructure.UserJdbcRepository;
 import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.UserEntity;
 import com.example.spotify.user.domain.entity.UserId;

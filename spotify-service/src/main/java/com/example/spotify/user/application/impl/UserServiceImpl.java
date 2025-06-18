@@ -3,7 +3,7 @@ package com.example.spotify.user.application.impl;
 import com.example.spotify.common.exception.AuthenticationException;
 import com.example.spotify.common.exception.ErrorType;
 import com.example.spotify.common.exception.UserProfileException;
-import com.example.spotify.common.infrastructure.service.TokenProvider;
+import com.example.spotify.auth.infrastructure.TokenProvider;
 import com.example.spotify.user.api.dto.UserProfileDTO;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;

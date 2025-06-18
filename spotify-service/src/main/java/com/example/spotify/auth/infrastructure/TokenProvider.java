@@ -1,4 +1,4 @@
-package com.example.spotify.common.infrastructure.service;
+package com.example.spotify.auth.infrastructure;
 
 public interface TokenProvider {
     String getAccessToken();

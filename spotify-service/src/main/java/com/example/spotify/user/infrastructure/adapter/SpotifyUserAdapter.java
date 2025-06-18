@@ -1,6 +1,7 @@
-package com.example.spotify.common.infrastructure.adapter;
+package com.example.spotify.user.infrastructure.adapter;
 
 import com.example.spotify.common.exception.*;
+import com.example.spotify.common.infrastructure.adapter.ExternalServiceAdapter;
 import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.UserEntity;

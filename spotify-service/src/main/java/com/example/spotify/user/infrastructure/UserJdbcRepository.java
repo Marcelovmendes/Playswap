@@ -1,6 +1,6 @@
-package com.example.spotify.common.infrastructure.repository;
+package com.example.spotify.user.infrastructure;
 
-import com.example.spotify.common.infrastructure.persistence.UserJdbcEntity;
+import com.example.spotify.user.infrastructure.persistence.UserJdbcEntity;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
