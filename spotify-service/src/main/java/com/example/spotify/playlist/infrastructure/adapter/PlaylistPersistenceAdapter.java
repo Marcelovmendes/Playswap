@@ -25,7 +25,8 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
     private final TrackJdbcRepository trackJdbcRepository;
     private final PlaylistTrackJdbcRepository playlistTrackJdbcRepository;
 
-    public PlaylistPersistenceAdapter(PlaylistJdbcRepository playlistJdbcRepository, TrackJdbcRepository trackJdbcRepository,
+    public PlaylistPersistenceAdapter(PlaylistJdbcRepository playlistJdbcRepository,
+                                      TrackJdbcRepository trackJdbcRepository,
                                       PlaylistTrackJdbcRepository playlistTrackJdbcRepository) {
         this.playlistJdbcRepository = playlistJdbcRepository;
         this.trackJdbcRepository = trackJdbcRepository;
