@@ -30,6 +30,9 @@ public class PlaylistAggregate {
     public static PlaylistAggregate reconstitute (Playlist playlist, List<Track> tracks) {
         return new PlaylistAggregate(playlist, tracks);
     }
+    public Boolean exists(String id) {
+        return id != null && !id.isEmpty();
+    }
 
     public void addTrack(Track track) {
         Objects.requireNonNull(track, "Track cannot be null");

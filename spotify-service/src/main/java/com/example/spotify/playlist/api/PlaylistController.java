@@ -3,6 +3,7 @@ package com.example.spotify.playlist.api;
 import com.example.spotify.playlist.application.PlaylistsService;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import com.example.spotify.playlist.domain.entity.Playlist;
+import com.example.spotify.playlist.domain.entity.PlaylistAggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,8 +44,8 @@ public class PlaylistController {
         return ResponseEntity.ok(tracks);
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity<HttpStatus> getPlaylistTracks(@PathVariable String playlistId) {
-     playlistsService.getPlaylistTracksAsync(playlistId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PlaylistAggregate> getPlaylistTracks(@PathVariable String playlistId) {
+       PlaylistAggregate playlist = playlistsService.getPlaylistTracksAsync(playlistId);
+        return ResponseEntity.ok(playlist);
     }
 }

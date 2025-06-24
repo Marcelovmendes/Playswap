@@ -35,8 +35,14 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
 
 
     @Override
-    public PlaylistAggregate findById(String id) {
-        return null;
+    public PlaylistAggregate findBySpotifyId(String playlistId) {
+        PlayListJdbcEntity entity = playlistJdbcRepository.findBySpotifyId(playlistId);
+        if (entity == null) {
+            log.warn("Playlist with Spotify ID {} not found", playlistId);
+            return null;
+        }
+        log.info("Found playlist with Spotify ID {}: {}", playlistId, entity.getName());
+        return mapToAggregate(entity);
     }
 
     @Override
@@ -46,7 +52,14 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
 
     @Override
     public PlaylistAggregate save(PlaylistAggregate playlist) {
-        return null;
+       PlayListJdbcEntity entity = mapToPlaylistEntity(playlist);
+        PlayListJdbcEntity savedEntity = playlistJdbcRepository.save(entity);
+        log.info("Saved playlist: {} - {}", savedEntity.getId(), savedEntity.getName());
+
+        List<TracksJdbcEntity> trackEntities = saveAllTracks(playlist.getPlaylist().getTracks());
+        log.info("Saved {} tracks for playlist: {}", trackEntities.size(), savedEntity.getName());
+
+        return mapToAggregate(savedEntity);
     }
 
     @Override
@@ -95,7 +108,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
                 entity.isCollaborative(),
                 entity.isPublicAccess(),
                 entity.getTrackCount(),
-                entity.getImageUrl(),
+                entity.getImage(),
                 tracks,
                 entity.getExternalUrl()
         );

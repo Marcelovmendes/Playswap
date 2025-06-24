@@ -34,11 +34,11 @@ public class PlayListJdbcEntity {
     @Column("track_count")
     private int trackCount;
 
-    @Column("image_url")
-    private String imageUrl;
+    @Column("image")
+    private String image;
 
-    @Column("external_url")
-    private String externalUrl;
+    @Column("external_urls")
+    private String externalUrls;
 
     @Column("platform")
     private String platform;
@@ -71,8 +71,8 @@ public class PlayListJdbcEntity {
         this.collaborative = collaborative;
         this.publicAccess = publicAccess;
         this.trackCount = trackCount;
-        this.imageUrl = imageUrl;
-        this.externalUrl = externalUrl;
+        this.image = imageUrl;
+        this.externalUrls = externalUrl;
         this.platform = platform;
         this.conversionRequested = conversionRequested;
         this.targetPlatform = targetPlatform;
@@ -87,8 +87,8 @@ public class PlayListJdbcEntity {
     public boolean isCollaborative() { return collaborative; }
     public boolean isPublicAccess() { return publicAccess; }
     public int getTrackCount() { return trackCount; }
-    public String getImageUrl() { return imageUrl; }
-    public String getExternalUrl() { return externalUrl; }
+    public String getImage() { return image; }
+    public String getExternalUrl() { return externalUrls; }
     public String getPlatform() { return platform; }
     public boolean isConversionRequested() { return conversionRequested; }
     public String getTargetPlatform() { return targetPlatform; }

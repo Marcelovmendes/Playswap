@@ -62,24 +62,24 @@ public class PlaylistSyncServiceImpl implements PlaylistsService {
     }
 
     @Override
-    public void getPlaylistTracksAsync( String playlistId) {
+    public PlaylistAggregate getPlaylistTracksAsync( String playlistId) {
 
-        PlaylistAggregate aggregate = playlistRepository.findById(playlistId);
-        if (aggregate == null) {
-            throw new IllegalArgumentException("Playlist not found: " + playlistId);
+        PlaylistAggregate aggregate = playlistRepository.findBySpotifyId(playlistId);
+        if (!aggregate.exists(playlistId)) {
+            String accessToken = tokenProvider.getAccessToken();
+            List<Track> spotifyTracks = playlistPort.getPlaylistTracksAsync(playlistId, accessToken);
+
+            List<TracksJdbcEntity> fromEntity = playlistRepository.saveAllTracks(spotifyTracks);
+            trackJdbcRepository.saveAll(fromEntity);
+
+            for (Track track : spotifyTracks) {
+                aggregate.addTrack(track);
+            }
+            playlistRepository.save(aggregate);
+            log.info("Synced {} tracks for playlist {}",fromEntity, playlistId);
+
         }
-        String accessToken = tokenProvider.getAccessToken();
-        List<Track> spotifyTracks = playlistPort.getPlaylistTracksAsync(playlistId, accessToken);
-
-        List<TracksJdbcEntity> fromEntity = playlistRepository.saveAllTracks(spotifyTracks);
-        trackJdbcRepository.saveAll(fromEntity);
-
-        for (Track track : spotifyTracks) {
-            aggregate.addTrack(track);
-        }
-        playlistRepository.save(aggregate);
-        log.info("Synced {} tracks for playlist {}",fromEntity, playlistId);
-
+        return aggregate;
     };
 
 

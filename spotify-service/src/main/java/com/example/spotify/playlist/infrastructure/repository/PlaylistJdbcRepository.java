@@ -29,4 +29,10 @@ public interface PlaylistJdbcRepository extends CrudRepository<PlayListJdbcEntit
            """)
     List<PlayListJdbcEntity> findByPlatform(@Param("platform") String platform);
 
+    @Query("""
+           SELECT * FROM spotify.playlists
+           WHERE "spotify_id" = :spotify_id
+           """)
+    PlayListJdbcEntity findBySpotifyId(@Param("platform") String spotifyId);
+
 }
