@@ -16,6 +16,9 @@ public class PlayListJdbcEntity {
     @Column("id")
     private UUID id;
 
+    @Column("spotify_id")
+    private String spotifyId;
+
     @Column("name")
     private String name;
 
@@ -60,11 +63,11 @@ public class PlayListJdbcEntity {
     @Deprecated
     private PlayListJdbcEntity() {}
 
-    public PlayListJdbcEntity(UUID id, String name, UUID ownerId, String description, boolean collaborative,
+    public PlayListJdbcEntity( String spotifyId, String name, UUID ownerId, String description, boolean collaborative,
                                boolean publicAccess, int trackCount, String imageUrl, String externalUrl,
                                String platform, boolean conversionRequested, String targetPlatform,
                                LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+        this.spotifyId = spotifyId;
         this.name = name;
         this.ownerId = ownerId;
         this.description = description;

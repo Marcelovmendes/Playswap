@@ -130,7 +130,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
         Playlist playlist = aggregate.getPlaylist();
 
         return new PlayListJdbcEntity(
-                playlist.getId().getInternalId(),
+                playlist.getId().spotifyId(),
                 playlist.getName(),
                 playlist.getOwnerId().getInternalId(),
                 playlist.getDescription(),
