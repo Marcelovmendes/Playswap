@@ -48,7 +48,6 @@ public class Playlist {
                 this.externalUrl);
     }
 
-    // Getters
     public PlaylistId getId() { return id; }
     public String getName() { return name; }
     public UserId getOwnerId() { return ownerId; }

@@ -11,10 +11,12 @@ import com.example.spotify.playlist.infrastructure.persistence.TracksJdbcEntity;
 import com.example.spotify.user.domain.entity.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PlaylistPersistenceAdapter implements PlaylistRepository {
@@ -24,25 +26,30 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
     private final PlaylistJdbcRepository playlistJdbcRepository;
     private final TrackJdbcRepository trackJdbcRepository;
     private final PlaylistTrackJdbcRepository playlistTrackJdbcRepository;
+    private final PlaylistCrudRepository playlistCrudRepository;
+
 
     public PlaylistPersistenceAdapter(PlaylistJdbcRepository playlistJdbcRepository,
                                       TrackJdbcRepository trackJdbcRepository,
-                                      PlaylistTrackJdbcRepository playlistTrackJdbcRepository) {
+                                      PlaylistTrackJdbcRepository playlistTrackJdbcRepository, PlaylistCrudRepository playlistCrudRepository) {
         this.playlistJdbcRepository = playlistJdbcRepository;
         this.trackJdbcRepository = trackJdbcRepository;
         this.playlistTrackJdbcRepository = playlistTrackJdbcRepository;
+        this.playlistCrudRepository = playlistCrudRepository;
     }
 
 
     @Override
     public PlaylistAggregate findBySpotifyId(String playlistId) {
-        PlayListJdbcEntity entity = playlistJdbcRepository.findBySpotifyId(playlistId);
-        if (entity == null) {
+        Optional<PlayListJdbcEntity> entity = playlistJdbcRepository.findBySpotifyId(playlistId);
+        if (entity.isEmpty()) {
             log.warn("Playlist with Spotify ID {} not found", playlistId);
             return null;
         }
-        log.info("Found playlist with Spotify ID {}: {}", playlistId, entity.getName());
-        return mapToAggregate(entity);
+        var playlistEntity = entity.get();
+
+        log.info("Found playlist with Spotify ID {}: {}", playlistId, playlistEntity.getName());
+        return mapToAggregate(playlistEntity);
     }
 
     @Override
@@ -52,8 +59,15 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
 
     @Override
     public PlaylistAggregate save(PlaylistAggregate playlist) {
-       PlayListJdbcEntity entity = mapToPlaylistEntity(playlist);
-        PlayListJdbcEntity savedEntity = playlistJdbcRepository.save(entity);
+        Optional<PlayListJdbcEntity> existingEntity = playlistJdbcRepository.findBySpotifyId(
+                playlist.getId().spotifyId()
+        );
+        PlayListJdbcEntity savedEntity;
+
+        log.info("Creating new playlist: {}", playlist.getName());
+        PlayListJdbcEntity entity = mapToPlaylistEntity(playlist);
+        savedEntity = playlistCrudRepository.insert(entity);
+
         log.info("Saved playlist: {} - {}", savedEntity.getId(), savedEntity.getName());
 
         List<TracksJdbcEntity> trackEntities = saveAllTracks(playlist.getPlaylist().getTracks());
@@ -130,6 +144,7 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
         Playlist playlist = aggregate.getPlaylist();
 
         return new PlayListJdbcEntity(
+                playlist.getId().internalId(),
                 playlist.getId().spotifyId(),
                 playlist.getName(),
                 playlist.getOwnerId().getInternalId(),
@@ -147,7 +162,27 @@ public class PlaylistPersistenceAdapter implements PlaylistRepository {
         );
     }
 
+    private PlayListJdbcEntity updatePlaylistEntity(PlayListJdbcEntity existingEntity, PlaylistAggregate aggregate) {
+        Playlist playlist = aggregate.getPlaylist();
 
+        return PlayListJdbcEntity.reconstitute(
+                existingEntity.getId(),
+                playlist.getId().spotifyId(),
+                playlist.getName(),
+                playlist.getOwnerId().getInternalId(),
+                playlist.getDescription(),
+                playlist.isCollaborative(),
+                playlist.isPublicAccess(),
+                aggregate.getTrackCount(),
+                playlist.getImageUrl(),
+                playlist.getExternalUrl(),
+                "spotify",
+                false,
+                "youtube",
+                existingEntity.getCreatedAt(),
+                LocalDateTime.now()
+        );
+    }
 
 
 }

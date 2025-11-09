@@ -12,8 +12,7 @@ import java.util.UUID;
 
 @Table(name = "playlists", schema = "spotify")
 public class PlayListJdbcEntity {
-    @Id
-    @Column("id")
+
     private UUID id;
 
     @Column("spotify_id")
@@ -63,10 +62,11 @@ public class PlayListJdbcEntity {
     @Deprecated
     private PlayListJdbcEntity() {}
 
-    public PlayListJdbcEntity( String spotifyId, String name, UUID ownerId, String description, boolean collaborative,
+    public PlayListJdbcEntity(UUID id, String spotifyId, String name, UUID ownerId, String description, boolean collaborative,
                                boolean publicAccess, int trackCount, String imageUrl, String externalUrl,
                                String platform, boolean conversionRequested, String targetPlatform,
                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.spotifyId = spotifyId;
         this.name = name;
         this.ownerId = ownerId;
@@ -81,6 +81,14 @@ public class PlayListJdbcEntity {
         this.targetPlatform = targetPlatform;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+    public static PlayListJdbcEntity reconstitute(UUID id, String spotifyId, String name, UUID ownerId, String description,
+                                                boolean collaborative, boolean publicAccess, int trackCount,
+                                                String imageUrl, String externalUrl, String platform,
+                                                boolean conversionRequested, String targetPlatform,
+                                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new PlayListJdbcEntity( id, spotifyId, name, ownerId, description, collaborative, publicAccess,
+                trackCount, imageUrl, externalUrl, platform, conversionRequested, targetPlatform, createdAt, updatedAt);
     }
 
     public UUID getId() { return id; }

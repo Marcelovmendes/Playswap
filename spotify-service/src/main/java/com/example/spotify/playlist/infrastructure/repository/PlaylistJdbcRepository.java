@@ -7,12 +7,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PlaylistJdbcRepository extends CrudRepository<PlayListJdbcEntity, UUID> {
     @Query("""
-            SELECT * FROM spotify.playlists 
+            SELECT * FROM spotify.playlists\s
             WHERE owner_id = :ownerId
             """)
     List<PlayListJdbcEntity> findByOwnerId(@Param("owner_id") UUID ownerId);
@@ -31,8 +32,8 @@ public interface PlaylistJdbcRepository extends CrudRepository<PlayListJdbcEntit
 
     @Query("""
            SELECT * FROM spotify.playlists
-           WHERE "spotify_id" = :spotify_id
+           WHERE "spotify_id" = :spotifyId
            """)
-    PlayListJdbcEntity findBySpotifyId(@Param("platform") String spotifyId);
+    Optional<PlayListJdbcEntity> findBySpotifyId( String spotifyId);
 
 }

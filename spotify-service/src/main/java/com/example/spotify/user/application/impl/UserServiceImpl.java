@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
                      ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
          }
         try {
-            // Agora usamos o repositório do domínio
             UserEntity persistedUser = repository.findByEmail(userData.getEmailAddress())
                     .orElseGet(() -> {
                         try {
