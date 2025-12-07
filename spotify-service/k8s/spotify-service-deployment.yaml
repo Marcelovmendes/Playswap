@@ -1,0 +1,113 @@
+# k8s/spotify-service-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-service
+  namespace: site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spotify-service
+  template:
+    metadata:
+      labels:
+        app: spotify-service
+    spec:
+      initContainers:
+        - name: wait-for-redis
+          image: redis:7-alpine
+          command: ['sh', '-c', 'until redis-cli -h redis-service ping; do echo waiting for redis; sleep 2; done']
+
+      containers:
+        - name: spotify-service
+          image: spotify-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_DATA_REDIS_HOST
+              value: "redis-service"
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+            - name: SPOTIFY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: spotify-secrets
+                  key: spotify-client-id
+            - name: SPOTIFY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: spotify-secrets
+                  key: spotify-client-secret
+          volumeMounts:
+            - name: config
+              mountPath: /config/application.yml
+              subPath: application.yml
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - name: config
+          configMap:
+            name: spotify-service-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spotify-service
+  namespace: site
+spec:
+  selector:
+    app: spotify-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spotify-service-ingress
+  namespace: site
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-service
+                port:
+                  number: 8080
