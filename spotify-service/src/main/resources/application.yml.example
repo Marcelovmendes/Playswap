@@ -1,20 +1,7 @@
 properties# Application
 spring.application.name=spotify-service
 
-# Datasource - PSQL
-spring.datasource.url=jdbc:postgresql://localhost:5432/playswap
-spring.datasource.username=postgres
-spring.datasource.password=your_password_here
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-# SQL Init
-spring.sql.init.mode=always
-spring.sql.init.platform=postgresql
-spring.sql.init.schema-locations=classpath:schema.sql
-
 # JPA e JDBC
-spring.data.jdbc.repositories.enabled=true
-spring.data.jdbc.dialect=postgresql
 spring.data.redis.host=localhost
 spring.data.redis.port=6379
 
