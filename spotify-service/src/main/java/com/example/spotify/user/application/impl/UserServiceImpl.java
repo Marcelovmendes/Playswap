@@ -9,24 +9,19 @@ import com.example.spotify.user.domain.UserProfilePort;
 import com.example.spotify.user.application.UserService;
 import com.example.spotify.user.domain.entity.Email;
 import com.example.spotify.user.domain.entity.UserEntity;
-import com.example.spotify.user.domain.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserProfilePort userProfilePort;
-    private final UserRepository repository;
     private final TokenProvider tokenProvider;
 
-    public UserServiceImpl(UserProfilePort userProfilePort, UserRepository repository, TokenProvider tokenProvider) {
+    public UserServiceImpl(UserProfilePort userProfilePort, TokenProvider tokenProvider) {
         this.userProfilePort = userProfilePort;
-        this.repository = repository;
         this.tokenProvider = tokenProvider;
     }
 
@@ -46,16 +41,7 @@ public class UserServiceImpl implements UserService {
                      ErrorType.RESOURCE_NOT_FOUND_EXCEPTION);
          }
         try {
-            UserEntity persistedUser = repository.findByEmail(userData.getEmailAddress())
-                    .orElseGet(() -> {
-                        try {
-                            return repository.save(userData);
-                        } catch (ExecutionException e) {
-                            throw new UserProfileException("Erro ao salvar dados do usuário", ErrorType.SERVER_ERROR);
-                        }
-                    });
-
-            return mapToDTObject(persistedUser);
+            return mapToDTObject(userData);
         } catch (Exception e) {
             logger.error("Erro ao processar perfil do usuário", e);
             throw new UserProfileException("Erro ao processar perfil do usuário", ErrorType.SERVER_ERROR);

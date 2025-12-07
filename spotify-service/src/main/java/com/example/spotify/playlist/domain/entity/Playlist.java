@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Playlist {
-    private final PlaylistId id;
+    private final String id;
     private final String name;
-    private final UserId ownerId;
+    private final String ownerId;
     private final String ownerName;
     private final String description;
     private final boolean collaborative;
@@ -18,7 +18,7 @@ public class Playlist {
     private final List<Track> tracks;
     private final String externalUrl;
 
-    public Playlist(PlaylistId id, String name, UserId ownerId, String ownerName, String description, boolean collaborative, boolean publicAccess,
+    public Playlist(String id, String name, String ownerId, String ownerName, String description, boolean collaborative, boolean publicAccess,
                     int trackCount, String imageUrl, List<Track> tracks, String externalUrl) {
 
         this.id = Objects.requireNonNull(id, "Playlist ID cannot be null");
@@ -48,9 +48,9 @@ public class Playlist {
                 this.externalUrl);
     }
 
-    public PlaylistId getId() { return id; }
+    public String getId() { return id; }
     public String getName() { return name; }
-    public UserId getOwnerId() { return ownerId; }
+    public String getOwnerId() { return ownerId; }
     public String getOwnerName() { return ownerName; }
     public String getDescription() { return description; }
     public boolean isCollaborative() { return collaborative; }

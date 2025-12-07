@@ -1,8 +1,10 @@
 package com.example.spotify.common.exception;
 
-import jakarta.ws.rs.NotFoundException;
+
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.exceptions.detailed.NotFoundException;
+
 import java.io.IOException;
 import java.text.ParseException;
 

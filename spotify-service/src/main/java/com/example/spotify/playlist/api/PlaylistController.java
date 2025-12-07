@@ -44,8 +44,8 @@ public class PlaylistController {
         return ResponseEntity.ok(tracks);
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity<PlaylistAggregate> getPlaylistTracks(@PathVariable String playlistId) {
-       PlaylistAggregate playlist = playlistsService.getPlaylistTracksAsync(playlistId);
+    public ResponseEntity<List<com.example.spotify.playlist.domain.entity.Track>> getPlaylistTracks(@PathVariable String playlistId) {
+       List<com.example.spotify.playlist.domain.entity.Track> playlist = playlistsService.getPlaylistTracksAsync(playlistId);
         return ResponseEntity.ok(playlist);
     }
 }
