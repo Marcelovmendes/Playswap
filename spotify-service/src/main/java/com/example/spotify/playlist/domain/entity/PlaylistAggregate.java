@@ -18,7 +18,7 @@ public class PlaylistAggregate {
         String targetPlaylistForm = null;
     }
 
-    public static PlaylistAggregate create(PlaylistId id, String name, UserId ownerId, String ownerName, String description,
+    public static PlaylistAggregate create(String id, String name, String ownerId, String ownerName, String description,
                                             boolean collaborative, boolean publicAccess, int trackCount, String imageUrl,
                                             List<Track> tracks, String externalUrl) {
 
@@ -27,27 +27,17 @@ public class PlaylistAggregate {
 
         return new PlaylistAggregate(playlist, tracks);
     }
-    public static PlaylistAggregate reconstitute (Playlist playlist, List<Track> tracks) {
-        return new PlaylistAggregate(playlist, tracks);
-    }
     public Boolean exists(String id) {
         return id != null && !id.isEmpty();
     }
 
-    public void addTrack(Track track) {
-        Objects.requireNonNull(track, "Track cannot be null");
-        if (tracks.stream().noneMatch(t -> t.getId().equals(track.getId()))) {
-            tracks.add(track);
-        }
-    }
 
     public boolean isEmpty() { return tracks.isEmpty(); }
     public Playlist getPlaylist() { return playlist; }
     public List<Track> getTracks() { return List.copyOf(tracks);}
-    public PlaylistId getId() { return playlist.getId(); }
+    public String getId() { return playlist.getId(); }
     public String getName() { return playlist.getName(); }
-    public UserId getOwnerId() { return playlist.getOwnerId(); }
+    public String getOwnerId() { return playlist.getOwnerId(); }
     public Integer getTrackCount() { return playlist.getTrackCount(); }
 
-    //conversion aqui?
 }

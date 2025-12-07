@@ -4,10 +4,8 @@ import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.common.infrastructure.adapter.ExternalServiceAdapter;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import com.example.spotify.playlist.domain.entity.Playlist;
-import com.example.spotify.playlist.domain.entity.PlaylistId;
 import com.example.spotify.playlist.domain.entity.Track;
 import com.example.spotify.playlist.domain.entity.TrackId;
-import com.example.spotify.user.domain.entity.UserId;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -90,9 +88,9 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         }
 
         return new Playlist(
-                PlaylistId.fromSpotifyId(spotifyPlaylist.getId()),
+              spotifyPlaylist.getId(),
                 spotifyPlaylist.getName(),
-                UserId.fromSpotifyId(spotifyPlaylist.getOwner().getId()),
+                spotifyPlaylist.getOwner().getId(),
                 spotifyPlaylist.getOwner().getDisplayName(),
                 "spotifyPlaylist",
                 spotifyPlaylist.getIsCollaborative(),
@@ -154,9 +152,9 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         }
 
         return new Playlist(
-                PlaylistId.fromSpotifyId(spotifyPlaylist.getId()),
+                spotifyPlaylist.getId(),
                 spotifyPlaylist.getName(),
-                UserId.fromSpotifyId(spotifyPlaylist.getOwner().getId()),
+                spotifyPlaylist.getOwner().getId(),
                 spotifyPlaylist.getOwner().getDisplayName(),
                 spotifyPlaylist.getDescription(),
                 spotifyPlaylist.getIsCollaborative(),

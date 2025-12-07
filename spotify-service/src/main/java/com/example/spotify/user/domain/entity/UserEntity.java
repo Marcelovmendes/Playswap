@@ -6,7 +6,7 @@ import java.util.Objects;
 
 
 public final class UserEntity {
-    private final UserId id;
+    private final String id;
     private final LocalDate birthdate;
     private final String country;
     private final String displayName;
@@ -17,10 +17,9 @@ public final class UserEntity {
     private final String photoCover;
     private final String spotifyUri;
     private final String type;
-    private final String userRegisteredId;
 
-    public UserEntity(UserId id, LocalDate birthdate, String country, String displayName, Email email, String externalUrls,
-            int followersCount, String href, String photoCover, String spotifyUri, String type, String userRegisteredId) {
+    public UserEntity(String id, LocalDate birthdate, String country, String displayName, Email email, String externalUrls,
+            int followersCount, String href, String photoCover, String spotifyUri, String type) {
 
         this.id = Objects.requireNonNull(id, "ID não pode ser nulo");
         this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
@@ -33,9 +32,9 @@ public final class UserEntity {
         this.photoCover = photoCover;
         this.spotifyUri = spotifyUri;
         this.type = type;
-        this.userRegisteredId = userRegisteredId;
+
     }
-    public UserId getId() { return id; }
+    public String getId() { return id; }
     public LocalDate getBirthdate() { return birthdate; }
     public String getCountry() { return country; }
     public String getDisplayName() { return displayName; }
@@ -47,6 +46,5 @@ public final class UserEntity {
     public String getPhotoCover() { return photoCover; }
     public String getSpotifyUri() { return spotifyUri; }
     public String getType() { return type; }
-    public String getUserRegisteredId() { return userRegisteredId; }
     
 }

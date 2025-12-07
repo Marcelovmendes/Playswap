@@ -67,7 +67,7 @@ public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserPr
         }
 
         return new UserEntity(
-                UserId.fromSpotifyId(spotifyUser.getId()),
+                spotifyUser.getId(),
                 birthdate,
                 spotifyUser.getCountry() != null ? spotifyUser.getCountry().getAlpha3() : null,
                 spotifyUser.getDisplayName(),
@@ -77,8 +77,7 @@ public class SpotifyUserAdapter extends ExternalServiceAdapter implements UserPr
                 spotifyUser.getHref(),
                 photoUrl,
                 spotifyUser.getUri(),
-                spotifyUser.getType().getType(),
-                spotifyUser.getId() // Spotify ID
+                spotifyUser.getType().getType()
         );
 
     }

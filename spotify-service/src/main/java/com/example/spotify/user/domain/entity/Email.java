@@ -1,6 +1,8 @@
 package com.example.spotify.user.domain.entity;
 
-import jakarta.ws.rs.NotAcceptableException;
+
+
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -11,11 +13,11 @@ public record Email(String value) {
 
     public static Email of(String email) {
         if (email == null || email.isEmpty()) {
-            throw new NotAcceptableException("Email não pode ser vazio");
+            throw new NotAcceptableStatusException("Email não pode ser vazio");
         }
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new NotAcceptableException("Formato de email inválido");
+            throw new NotAcceptableStatusException("Formato de email inválido");
         }
 
         return new Email(email);
