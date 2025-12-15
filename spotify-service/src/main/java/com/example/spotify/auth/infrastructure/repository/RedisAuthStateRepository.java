@@ -36,13 +36,6 @@ public class RedisAuthStateRepository implements AuthStateRepository {
         return Optional.of(AuthState.create(stateValue, codeVerifier));
     }
 
-    @Override
-    public boolean exists(String stateValue) {
-        if (stateValue == null || stateValue.isEmpty()) return false;
-        String key = REDIS_AUTH_STATE + stateValue;
-        Boolean exists = redisTemplate.hasKey(key);
-        return exists;
-    }
 
     @Override
     public void remove(String stateValue) {

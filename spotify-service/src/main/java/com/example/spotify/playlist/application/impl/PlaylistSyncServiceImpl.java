@@ -34,10 +34,9 @@ public class PlaylistSyncServiceImpl implements PlaylistsService {
 
     @Override
     public List<Track> getPlaylistTracksAsync(String playlistId) {
-
-            String accessToken = tokenProvider.getAccessToken();
-        return playlistPort.getPlaylistTracksAsync(playlistId, accessToken);
-    };
+        String accessToken = tokenProvider.getAccessToken();
+        return playlistPort.getPlaylistTracksAsync(accessToken, playlistId);
+    }
 
 
 }
