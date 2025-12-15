@@ -3,7 +3,9 @@ package com.example.spotify.playlist.infrastructure.adapter;
 import com.example.spotify.common.exception.SpotifyApiExceptionTranslator;
 import com.example.spotify.common.infrastructure.adapter.ExternalServiceAdapter;
 import com.example.spotify.playlist.domain.PlaylistPort;
+import com.example.spotify.playlist.domain.entity.PageResult;
 import com.example.spotify.playlist.domain.entity.Playlist;
+import com.example.spotify.playlist.domain.entity.SavedTrack;
 import com.example.spotify.playlist.domain.entity.Track;
 import com.example.spotify.playlist.domain.entity.TrackId;
 import org.slf4j.Logger;
@@ -14,7 +16,9 @@ import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -81,6 +85,22 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         return convertPlaylistTracks(spotifyTracks);
 
     }
+
+    @Override
+    public PageResult<SavedTrack> getCurrentUserSavedTracksAsync(String accessToken) {
+        spotifyApi.setAccessToken(accessToken);
+        Paging<se.michaelthelin.spotify.model_objects.specification.SavedTrack> spotifySavedTracks = executeAsync(
+                spotifyApi.getUsersSavedTracks()
+                        .limit(50)
+                        .offset(0)
+                        .build()
+                        .executeAsync(),
+                "fetching current user saved tracks"
+        );
+
+        return convertToPageResult(spotifySavedTracks);
+    }
+
     private Playlist convertToPlaylist(PlaylistSimplified spotifyPlaylist) {
         String imageUrl = null;
         if (spotifyPlaylist.getImages() != null && spotifyPlaylist.getImages().length > 0) {
@@ -165,6 +185,31 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
                 spotifyPlaylist.getExternalUrls().get("spotify"));
     }
 
+    private PageResult<SavedTrack> convertToPageResult(Paging<se.michaelthelin.spotify.model_objects.specification.SavedTrack> spotifyPaging) {
+        List<SavedTrack> savedTracks = new ArrayList<>();
 
+        for (se.michaelthelin.spotify.model_objects.specification.SavedTrack spotifySavedTrack : spotifyPaging.getItems()) {
+            savedTracks.add(convertSavedTrack(spotifySavedTrack));
+        }
+
+        return new PageResult<>(
+                savedTracks,
+                spotifyPaging.getTotal(),
+                spotifyPaging.getLimit(),
+                spotifyPaging.getOffset(),
+                spotifyPaging.getNext(),
+                spotifyPaging.getPrevious()
+        );
+    }
+
+    private SavedTrack convertSavedTrack(se.michaelthelin.spotify.model_objects.specification.SavedTrack spotifySavedTrack) {
+        se.michaelthelin.spotify.model_objects.specification.Track spotifyTrack = spotifySavedTrack.getTrack();
+        Track track = convertTrack(spotifyTrack);
+
+        Date addedAtDate = spotifySavedTrack.getAddedAt();
+        Instant addedAt = addedAtDate != null ? addedAtDate.toInstant() : Instant.now();
+
+        return new SavedTrack(track, addedAt);
+    }
 
 }

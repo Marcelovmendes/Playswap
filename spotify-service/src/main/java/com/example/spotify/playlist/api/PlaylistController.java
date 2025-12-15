@@ -2,8 +2,10 @@ package com.example.spotify.playlist.api;
 
 import com.example.spotify.playlist.application.PlaylistsService;
 import com.example.spotify.playlist.domain.PlaylistPort;
+import com.example.spotify.playlist.domain.entity.PageResult;
 import com.example.spotify.playlist.domain.entity.Playlist;
 import com.example.spotify.playlist.domain.entity.PlaylistAggregate;
+import com.example.spotify.playlist.domain.entity.SavedTrack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -48,4 +50,12 @@ public class PlaylistController {
        List<com.example.spotify.playlist.domain.entity.Track> playlist = playlistsService.getPlaylistTracksAsync(playlistId);
         return ResponseEntity.ok(playlist);
     }
+
+    @GetMapping("/saved-tracks")
+    public ResponseEntity<PageResult<SavedTrack>> getCurrentUserSavedTracks() {
+        PageResult<SavedTrack> savedTracks = playlistsService.getCurrentUserSavedTracksAsync();
+        return ResponseEntity.ok(savedTracks);
+    }
+
+
 }

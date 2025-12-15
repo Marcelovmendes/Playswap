@@ -2,7 +2,9 @@ package com.example.spotify.playlist.application.impl;
 
 import com.example.spotify.auth.infrastructure.TokenProvider;
 import com.example.spotify.playlist.domain.PlaylistPort;
+import com.example.spotify.playlist.domain.entity.PageResult;
 import com.example.spotify.playlist.domain.entity.Playlist;
+import com.example.spotify.playlist.domain.entity.SavedTrack;
 import com.example.spotify.playlist.domain.entity.Track;
 import com.example.spotify.playlist.domain.entity.TrackId;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +59,7 @@ class PlaylistSyncServiceImplTest {
     }
 
     @Test
-    @DisplayName("getListOfCurrentUsersPlaylistsAsync should return empty list when no playlists exist")
+    @DisplayName("getListOfCurrentUsersPlaylistsAsync should return empty list when no playlists exz'ist")
     void getListOfCurrentUsersPlaylistsAsync_ReturnsEmptyList() {
         when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
         when(playlistPort.getListOfCurrentUsersPlaylistsAsync(ACCESS_TOKEN)).thenReturn(List.of());
@@ -276,5 +279,163 @@ class PlaylistSyncServiceImplTest {
                 "https://p.scdn.co/mp3-preview/" + trackId,
                 "https://i.scdn.co/image/" + trackId
         );
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should successfully return saved tracks")
+    void getCurrentUserSavedTracksAsync_Success() {
+        List<SavedTrack> savedTracks = List.of(
+                createSavedTrack("track1", "Saved Song 1", Instant.parse("2024-01-01T00:00:00Z")),
+                createSavedTrack("track2", "Saved Song 2", Instant.parse("2024-01-02T00:00:00Z"))
+        );
+        PageResult<SavedTrack> expectedPageResult = new PageResult<>(
+                savedTracks,
+                100,
+                50,
+                0,
+                "https://api.spotify.com/v1/next",
+                null
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getCurrentUserSavedTracksAsync(ACCESS_TOKEN)).thenReturn(expectedPageResult);
+
+        PageResult<SavedTrack> result = service.getCurrentUserSavedTracksAsync();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).hasSize(2);
+        assertThat(result.getTotal()).isEqualTo(100);
+        assertThat(result.getLimit()).isEqualTo(50);
+        assertThat(result.getOffset()).isEqualTo(0);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.hasPrevious()).isFalse();
+
+        verify(tokenProvider).getAccessToken();
+        verify(playlistPort).getCurrentUserSavedTracksAsync(ACCESS_TOKEN);
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should return empty page when no saved tracks exist")
+    void getCurrentUserSavedTracksAsync_ReturnsEmptyPage() {
+        PageResult<SavedTrack> emptyPageResult = new PageResult<>(
+                List.of(),
+                0,
+                50,
+                0,
+                null,
+                null
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getCurrentUserSavedTracksAsync(ACCESS_TOKEN)).thenReturn(emptyPageResult);
+
+        PageResult<SavedTrack> result = service.getCurrentUserSavedTracksAsync();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).isEmpty();
+        assertThat(result.getTotal()).isEqualTo(0);
+        assertThat(result.hasNext()).isFalse();
+        assertThat(result.hasPrevious()).isFalse();
+
+        verify(tokenProvider).getAccessToken();
+        verify(playlistPort).getCurrentUserSavedTracksAsync(ACCESS_TOKEN);
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should use correct access token")
+    void getCurrentUserSavedTracksAsync_UsesCorrectAccessToken() {
+        String customToken = "custom-token-xyz";
+        PageResult<SavedTrack> pageResult = new PageResult<>(
+                List.of(createSavedTrack("track1", "Song", Instant.now())),
+                1,
+                50,
+                0,
+                null,
+                null
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(customToken);
+        when(playlistPort.getCurrentUserSavedTracksAsync(customToken)).thenReturn(pageResult);
+
+        service.getCurrentUserSavedTracksAsync();
+
+        verify(playlistPort).getCurrentUserSavedTracksAsync(customToken);
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should handle pagination metadata correctly")
+    void getCurrentUserSavedTracksAsync_HandlesPaginationMetadata() {
+        PageResult<SavedTrack> pageResult = new PageResult<>(
+                List.of(createSavedTrack("track1", "Song", Instant.now())),
+                200,
+                50,
+                50,
+                "https://api.spotify.com/v1/next",
+                "https://api.spotify.com/v1/previous"
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getCurrentUserSavedTracksAsync(ACCESS_TOKEN)).thenReturn(pageResult);
+
+        PageResult<SavedTrack> result = service.getCurrentUserSavedTracksAsync();
+
+        assertThat(result.getTotal()).isEqualTo(200);
+        assertThat(result.getLimit()).isEqualTo(50);
+        assertThat(result.getOffset()).isEqualTo(50);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.hasPrevious()).isTrue();
+        assertThat(result.getNext()).isEqualTo("https://api.spotify.com/v1/next");
+        assertThat(result.getPrevious()).isEqualTo("https://api.spotify.com/v1/previous");
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should call tokenProvider exactly once")
+    void getCurrentUserSavedTracksAsync_CallsTokenProviderOnce() {
+        PageResult<SavedTrack> pageResult = new PageResult<>(
+                List.of(),
+                0,
+                50,
+                0,
+                null,
+                null
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getCurrentUserSavedTracksAsync(ACCESS_TOKEN)).thenReturn(pageResult);
+
+        service.getCurrentUserSavedTracksAsync();
+
+        verify(tokenProvider, times(1)).getAccessToken();
+    }
+
+    @Test
+    @DisplayName("getCurrentUserSavedTracksAsync should preserve saved tracks order")
+    void getCurrentUserSavedTracksAsync_PreservesOrder() {
+        List<SavedTrack> orderedSavedTracks = List.of(
+                createSavedTrack("track1", "First Song", Instant.parse("2024-01-01T00:00:00Z")),
+                createSavedTrack("track2", "Second Song", Instant.parse("2024-01-02T00:00:00Z")),
+                createSavedTrack("track3", "Third Song", Instant.parse("2024-01-03T00:00:00Z"))
+        );
+        PageResult<SavedTrack> pageResult = new PageResult<>(
+                orderedSavedTracks,
+                3,
+                50,
+                0,
+                null,
+                null
+        );
+
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getCurrentUserSavedTracksAsync(ACCESS_TOKEN)).thenReturn(pageResult);
+
+        PageResult<SavedTrack> result = service.getCurrentUserSavedTracksAsync();
+
+        assertThat(result.getItems()).extracting(st -> st.getTrack().getName())
+                .containsExactly("First Song", "Second Song", "Third Song");
+    }
+
+    private SavedTrack createSavedTrack(String trackId, String name, Instant addedAt) {
+        Track track = createTrack(trackId, name);
+        return new SavedTrack(track, addedAt);
     }
 }
