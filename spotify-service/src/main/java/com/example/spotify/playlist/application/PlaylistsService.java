@@ -11,6 +11,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PlaylistsService {
     List<Playlist> getListOfCurrentUsersPlaylistsAsync();
-    List<Track> getPlaylistTracksAsync(String playlistId);
+    PageResult<Track> getPlaylistTracksAsync(String playlistId, int offset, int limit);
     PageResult<SavedTrack> getCurrentUserSavedTracksAsync();
 }

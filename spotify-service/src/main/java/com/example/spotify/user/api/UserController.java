@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/details")
     public ResponseEntity<?> showDashboard(HttpSession session) {
 
-              log.info("Callback request ID: {}", session.getId());
+              log.info("Callback sessionID for showDashoboard: {}", session.getId());
               String accessToken = (String) session.getAttribute("spotifyAccessToken");
               UserProfileDTO user = userService.getCurrentUserProfileAsync();
 

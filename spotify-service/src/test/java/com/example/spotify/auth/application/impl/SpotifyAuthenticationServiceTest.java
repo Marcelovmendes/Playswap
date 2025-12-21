@@ -52,7 +52,7 @@ class SpotifyAuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Common setup if needed
+    
     }
 
     @Test

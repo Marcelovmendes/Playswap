@@ -25,7 +25,8 @@ public class RedisAuthStateRepository implements AuthStateRepository {
     }
 
     @Override
-    public Optional<AuthState> findByStateValue(String stateValue) {
+    public Optional<AuthState>
+    findByStateValue(String stateValue) {
         String key = REDIS_AUTH_STATE + stateValue;
         String codeVerifier = redisTemplate.opsForValue().get(key);
 

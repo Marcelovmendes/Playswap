@@ -14,6 +14,6 @@ public interface PlaylistPort {
     Paging<PlaylistSimplified> getListOfCurrentUsersPlaylistsSync(String accessToken);
     List<Playlist> getListOfCurrentUsersPlaylistsAsync(String accessToken);
     se.michaelthelin.spotify.model_objects.specification.Track[] getSeveralTracksAsync();
-    List<Track> getPlaylistTracksAsync(String accessToken , String playlistId);
+    PageResult<Track> getPlaylistTracksAsync(String accessToken, String playlistId, int offset, int limit);
     PageResult<SavedTrack> getCurrentUserSavedTracksAsync(String accessToken);
 }

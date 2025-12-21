@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -21,6 +18,8 @@ public class AuthenticationController {
     private final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
     private final TokenQuery tokenQuery;
     private final AuthUseCase authUseCase;
+    private static String frontendUrl = "http://localhost:3000/auth/callback";
+
 
     public AuthenticationController(TokenQuery tokenQuery, AuthUseCase authUseCase) {
         this.tokenQuery = tokenQuery;
@@ -29,6 +28,7 @@ public class AuthenticationController {
 
     @GetMapping("/")
     public ResponseEntity<String> initiateAuthentication(){
+
             URI response = authUseCase.initiateAuthentication();
             return ResponseEntity.ok(response.toString());
     }
@@ -40,23 +40,34 @@ public class AuthenticationController {
             @RequestParam(required = false) String error,
             HttpSession session) {
 
-
-        log.info("Callback session ID: {}", session.getId());
-        log.info("Callback recebido. Code presente: {}, State: {}, Error: {}",
-                code != null, state, error != null ? error : "nenhum");
+        log.info("OAuth callback received - Session ID: {}", session.getId());
+        log.info("Callback parameters - Code present: {}, State: {}, Error: {}",
+                code != null, state, error != null ? error : "none");
 
         if (error != null) {
-            log.error("Erro retornado pelo provedor: {}", error);
-
+            log.error("OAuth provider returned error: {}", error);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", frontendUrl + "?status=error&message=" + error)
+                    .build();
         }
+
         try {
             Token token = authUseCase.completeAuthentication(code, state);
+
             tokenQuery.storeUserToken(session.getId(), token);
 
-            log.info("Autenticação concluída e enviada pra sessão com sucesso!");
-            return ResponseEntity.ok("Autenticação concluída!");
+            log.info("Authentication successful - Token stored in session: {}", session.getId());
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", frontendUrl + "?status=success")
+                    .build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            log.error("Authentication failed: {}", e.getMessage(), e);
+            String errorMessage = e.getMessage() != null ? e.getMessage() : "authentication_failed";
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", frontendUrl + "?status=error&message=" + errorMessage)
+                    .build();
         }
     }
+
 }

@@ -115,34 +115,37 @@ class PlaylistSyncServiceImplTest {
                 createTrack("track1", "Song One"),
                 createTrack("track2", "Song Two")
         );
+        PageResult<Track> pageResult = new PageResult<>(expectedTracks, 2, 50, 0, null, null);
 
         when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID)).thenReturn(expectedTracks);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50)).thenReturn(pageResult);
 
-        List<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID);
+        PageResult<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID, 0, 50);
 
         assertThat(result).isNotNull();
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).getName()).isEqualTo("Song One");
-        assertThat(result.get(1).getName()).isEqualTo("Song Two");
+        assertThat(result.getItems()).hasSize(2);
+        assertThat(result.getItems().get(0).getName()).isEqualTo("Song One");
+        assertThat(result.getItems().get(1).getName()).isEqualTo("Song Two");
 
         verify(tokenProvider).getAccessToken();
-        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID);
+        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50);
     }
 
     @Test
     @DisplayName("getPlaylistTracksAsync should return empty list when playlist has no tracks")
     void getPlaylistTracksAsync_ReturnsEmptyList() {
-        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID)).thenReturn(List.of());
+        PageResult<Track> pageResult = new PageResult<>(List.of(), 0, 50, 0, null, null);
 
-        List<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID);
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50)).thenReturn(pageResult);
+
+        PageResult<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID, 0, 50);
 
         assertThat(result).isNotNull();
-        assertThat(result).isEmpty();
+        assertThat(result.getItems()).isEmpty();
 
         verify(tokenProvider).getAccessToken();
-        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID);
+        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50);
     }
 
     @Test
@@ -151,13 +154,14 @@ class PlaylistSyncServiceImplTest {
         String customToken = "custom-token-abc";
         String customPlaylistId = "custom-playlist-999";
         List<Track> tracks = List.of(createTrack("track1", "Test Track"));
+        PageResult<Track> pageResult = new PageResult<>(tracks, 1, 50, 0, null, null);
 
         when(tokenProvider.getAccessToken()).thenReturn(customToken);
-        when(playlistPort.getPlaylistTracksAsync(customToken, customPlaylistId)).thenReturn(tracks);
+        when(playlistPort.getPlaylistTracksAsync(customToken, customPlaylistId, 0, 50)).thenReturn(pageResult);
 
-        service.getPlaylistTracksAsync(customPlaylistId);
+        service.getPlaylistTracksAsync(customPlaylistId, 0, 50);
 
-        verify(playlistPort).getPlaylistTracksAsync(customToken, customPlaylistId);
+        verify(playlistPort).getPlaylistTracksAsync(customToken, customPlaylistId, 0, 50);
     }
 
     @Test
@@ -169,14 +173,15 @@ class PlaylistSyncServiceImplTest {
                 createTrack("track3", "Song C"),
                 createTrack("track4", "Song D")
         );
+        PageResult<Track> pageResult = new PageResult<>(expectedTracks, 4, 50, 0, null, null);
 
         when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID)).thenReturn(expectedTracks);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50)).thenReturn(pageResult);
 
-        List<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID);
+        PageResult<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID, 0, 50);
 
-        assertThat(result).hasSize(4);
-        assertThat(result).extracting(Track::getName)
+        assertThat(result.getItems()).hasSize(4);
+        assertThat(result.getItems()).extracting(Track::getName)
                 .containsExactly("Song A", "Song B", "Song C", "Song D");
     }
 
@@ -185,13 +190,14 @@ class PlaylistSyncServiceImplTest {
     void getPlaylistTracksAsync_PassesPlaylistIdCorrectly() {
         String specificPlaylistId = "specific-playlist-id-789";
         List<Track> tracks = List.of(createTrack("track1", "Track"));
+        PageResult<Track> pageResult = new PageResult<>(tracks, 1, 50, 0, null, null);
 
         when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, specificPlaylistId)).thenReturn(tracks);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, specificPlaylistId, 0, 50)).thenReturn(pageResult);
 
-        service.getPlaylistTracksAsync(specificPlaylistId);
+        service.getPlaylistTracksAsync(specificPlaylistId, 0, 50);
 
-        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, specificPlaylistId);
+        verify(playlistPort).getPlaylistTracksAsync(ACCESS_TOKEN, specificPlaylistId, 0, 50);
     }
 
     @Test
@@ -208,10 +214,12 @@ class PlaylistSyncServiceImplTest {
     @Test
     @DisplayName("getPlaylistTracksAsync should call tokenProvider exactly once")
     void getPlaylistTracksAsync_CallsTokenProviderOnce() {
-        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID)).thenReturn(List.of());
+        PageResult<Track> pageResult = new PageResult<>(List.of(), 0, 50, 0, null, null);
 
-        service.getPlaylistTracksAsync(PLAYLIST_ID);
+        when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50)).thenReturn(pageResult);
+
+        service.getPlaylistTracksAsync(PLAYLIST_ID, 0, 50);
 
         verify(tokenProvider, times(1)).getAccessToken();
     }
@@ -242,13 +250,14 @@ class PlaylistSyncServiceImplTest {
                 createTrack("track2", "Second Track"),
                 createTrack("track3", "Third Track")
         );
+        PageResult<Track> pageResult = new PageResult<>(orderedTracks, 3, 50, 0, null, null);
 
         when(tokenProvider.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID)).thenReturn(orderedTracks);
+        when(playlistPort.getPlaylistTracksAsync(ACCESS_TOKEN, PLAYLIST_ID, 0, 50)).thenReturn(pageResult);
 
-        List<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID);
+        PageResult<Track> result = service.getPlaylistTracksAsync(PLAYLIST_ID, 0, 50);
 
-        assertThat(result).extracting(Track::getName)
+        assertThat(result.getItems()).extracting(Track::getName)
                 .containsExactly("First Track", "Second Track", "Third Track");
     }
 

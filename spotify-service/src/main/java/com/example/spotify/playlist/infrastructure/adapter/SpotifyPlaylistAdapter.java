@@ -73,16 +73,18 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
 
 
     @Override
-    public List<Track> getPlaylistTracksAsync(String accessToken, String playlistId) {
+    public PageResult<Track> getPlaylistTracksAsync(String accessToken, String playlistId, int offset, int limit) {
         spotifyApi.setAccessToken(accessToken);
         Paging<PlaylistTrack> spotifyTracks =  executeAsync(
                spotifyApi.getPlaylistsItems(playlistId)
+                       .offset(offset)
+                       .limit(limit)
                        .build()
                        .executeAsync(),
                 "fetching playlist tracks"
        );
 
-        return convertPlaylistTracks(spotifyTracks);
+        return convertPlaylistTracksToPageResult(spotifyTracks);
 
     }
 
@@ -130,6 +132,19 @@ public class SpotifyPlaylistAdapter extends ExternalServiceAdapter implements Pl
         }
 
         return tracks;
+    }
+
+    private PageResult<Track> convertPlaylistTracksToPageResult(Paging<PlaylistTrack> playlistTracks) {
+        List<Track> tracks = convertPlaylistTracks(playlistTracks);
+
+        return new PageResult<>(
+                tracks,
+                playlistTracks.getTotal(),
+                playlistTracks.getLimit(),
+                playlistTracks.getOffset(),
+                playlistTracks.getNext(),
+                playlistTracks.getPrevious()
+        );
     }
     private Track convertTrack(se.michaelthelin.spotify.model_objects.specification.Track spotifyTrack) {
         String imageUrl = null;

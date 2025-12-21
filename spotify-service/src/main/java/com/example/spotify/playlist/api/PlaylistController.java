@@ -1,5 +1,6 @@
 package com.example.spotify.playlist.api;
 
+import com.example.spotify.playlist.api.dto.PlaylistTracksResponse;
 import com.example.spotify.playlist.application.PlaylistsService;
 import com.example.spotify.playlist.domain.PlaylistPort;
 import com.example.spotify.playlist.domain.entity.PageResult;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
@@ -46,9 +48,13 @@ public class PlaylistController {
         return ResponseEntity.ok(tracks);
     }
     @GetMapping("/{playlistId}/tracks")
-    public ResponseEntity<List<com.example.spotify.playlist.domain.entity.Track>> getPlaylistTracks(@PathVariable String playlistId) {
-       List<com.example.spotify.playlist.domain.entity.Track> playlist = playlistsService.getPlaylistTracksAsync(playlistId);
-        return ResponseEntity.ok(playlist);
+    public ResponseEntity<PlaylistTracksResponse> getPlaylistTracks(
+            @PathVariable String playlistId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "50") int limit) {
+        PageResult<com.example.spotify.playlist.domain.entity.Track> pageResult =
+            playlistsService.getPlaylistTracksAsync(playlistId, offset, limit);
+        return ResponseEntity.ok(PlaylistTracksResponse.fromPageResult(pageResult));
     }
 
     @GetMapping("/saved-tracks")
